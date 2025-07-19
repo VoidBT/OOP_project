@@ -10,4 +10,3 @@ Logistic::~Logistic() {}
 string Logistic::getID() const {
     return ID;
 }
-
