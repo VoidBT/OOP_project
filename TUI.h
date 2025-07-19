@@ -63,8 +63,8 @@ public:
     void displayMatches(const EnhancedScheduleList& schedule) const;
 
     // Scheduling and display handlers
-    void handleSchedulingOptions(EnhancedScheduleList& schedule);
-    void handleDisplayOptions(const EnhancedScheduleList& schedule) const;
+    void handleSchedulingOptions(EnhancedScheduleList& schedule, CStorage& cargoStorage, FStorage& freightStorage);
+    void handleDisplayOptions(const EnhancedScheduleList& schedule, CStorage& cargoStorage, FStorage& freightStorage) const;
 
     // Filename getters
     string getCargoFilename() const { return cargoFilename; }

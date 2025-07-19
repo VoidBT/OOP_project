@@ -86,12 +86,12 @@ FreightType TUI::getFreightTypeInput() const {
         << "Enter your choice: ";
     int choice = getIntInput("");
     switch (choice) {
-    case 1: return FreightType::Truck;
-    case 2: return FreightType::Ship;
-    case 3: return FreightType::Airplane;
+    case 1: return FreightType::MINI_MOVER;
+    case 2: return FreightType::CARGO_CRUISER;
+    case 3: return FreightType::MEGA_CARRIER;
     default:
         cout << "Invalid choice. Defaulting to Truck.\n";
-        return FreightType::Truck;
+        return FreightType::MEGA_CARRIER;
     }
 }
 
@@ -180,11 +180,11 @@ void TUI::run(CStorage& cargoStorage, FStorage& freightStorage, EnhancedSchedule
         }
 
         case 3: // Scheduling Options
-            handleSchedulingOptions(schedule);
+            handleSchedulingOptions(schedule, cargoStorage, freightStorage);
             break;
 
         case 4: // Display Options
-            handleDisplayOptions(schedule);
+            handleDisplayOptions(schedule, cargoStorage, freightStorage);
             break;
 
         case 5: { // File Operations
@@ -328,14 +328,14 @@ void TUI::displayMatches(const EnhancedScheduleList& schedule) const {
     }
 }
 
-void TUI::handleSchedulingOptions(EnhancedScheduleList& schedule) {
+void TUI::handleSchedulingOptions(EnhancedScheduleList& schedule, CStorage& cargoStorage, FStorage& freightStorage) {
     int sub;
     do {
         showSchedulingOptionsMenu();
         sub = getMenuChoice();
         switch (sub) {
         case 1: // Match Freight and Cargo
-            schedule.matchFreightAndCargo(cargoStorage, freightStorage);
+            schedule.matchFreightAndCargo(freightStorage, cargoStorage);
             cout << "Freight and Cargo matched successfully.\n";
             break;
         case 2: // Display Matches
@@ -348,7 +348,7 @@ void TUI::handleSchedulingOptions(EnhancedScheduleList& schedule) {
     } while (sub != 3);
 }
 
-void TUI::handleDisplayOptions(const EnhancedScheduleList& schedule) const {
+void TUI::handleDisplayOptions(const EnhancedScheduleList& schedule, CStorage& cargoStorage, FStorage& freightStorage) const {
     int sub;
     do {
         showDisplayOptionsMenu();
