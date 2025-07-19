@@ -11,4 +11,3 @@ string Logistic::getID() const {
     return ID;
 }
 
-hi Brendan added
