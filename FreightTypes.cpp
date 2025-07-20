@@ -1,5 +1,9 @@
-#include "FreightTypes.h"
+#include "FreightTypes.h" // Make sure this matches the .h filename (was FreightType.h in your prev paste)
 #include <stdexcept>
+#include <algorithm> // For std::remove
+
+// Add back 'using namespace std;' here
+using namespace std;
 
 FreightExtended::FreightExtended(const string& id, int t, const string& d, FreightType type)
     : Freight(id, t, d), type(type) {

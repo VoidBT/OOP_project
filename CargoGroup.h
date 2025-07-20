@@ -1,34 +1,35 @@
-#include "Cargo.h"
+#pragma once // Add this include guard
 #include <vector>
 #include <string>
+#include "Cargo.h" // Assuming Cargo.h defines Cargo
 
-using namespace std;
+// Removed: using namespace std; // Avoid in header files
 
 class CargoGroup {
 private:
-    string groupId;
-    string destination;
+    std::string groupId; // Qualify std::
+    std::string destination; // Qualify std::
     int maxSize;
-    vector<Cargo> cargos;
+    std::vector<Cargo> cargos; // Qualify std::
     int timeWindow; // in minutes
 
 public:
-    CargoGroup(const string& id, const string& dest, int maxSize = 10, int timeWindow = 15);
+    CargoGroup(const std::string& id, const std::string& dest, int maxSize = 10, int timeWindow = 15);
 
     bool addCargo(const Cargo& cargo);
-    bool removeCargo(const string& cargoId);
-    bool containsCargo(const string& cargoId) const;
+    bool removeCargo(const std::string& cargoId);
+    bool containsCargo(const std::string& cargoId) const;
     bool isFull() const;
     bool isEmpty() const;
     bool canMergeWith(const CargoGroup& other) const;
 
-    string getGroupId() const;
-    string getDestination() const;
+    std::string getGroupId() const;
+    std::string getDestination() const;
     int getSize() const;
     int getMaxSize() const;
     int getTimeWindow() const;
-    const vector<Cargo>& getCargos() const;
+    const std::vector<Cargo>& getCargos() const;
 
-    void setDestination(const string& newDest);
+    void setDestination(const std::string& newDest);
     void setTimeWindow(int newWindow);
 };

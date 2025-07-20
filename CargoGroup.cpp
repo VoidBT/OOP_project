@@ -1,5 +1,7 @@
 #include "CargoGroup.h"
 #include <algorithm>
+// Add back 'using namespace std;' here
+using namespace std;
 
 CargoGroup::CargoGroup(const string& id, const string& dest, int maxSize, int timeWindow)
     : groupId(id), destination(dest), maxSize(maxSize), timeWindow(timeWindow) {

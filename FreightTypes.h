@@ -1,8 +1,11 @@
-#include "Freight.h"
+#pragma once // Add this include guard
 #include <vector>
-#include <memory>
+#include <string> // Required for std::string
+#include <memory> // Required for std::shared_ptr and std::make_shared
+#include <stdexcept> // For std::invalid_argument (used in stringToType)
+#include "Freight.h" // Assuming Freight.h defines Freight
 
-using namespace std;
+// Removed: using namespace std; // Avoid in header files
 
 enum class FreightType { MINI_MOVER, CARGO_CRUISER, MEGA_CARRIER };
 
@@ -10,20 +13,20 @@ class FreightExtended : public Freight {
 private:
     FreightType type;
     int maxCapacity;
-    vector<string> assignedCargos;
+    std::vector<std::string> assignedCargos; // Qualify std::
 
 public:
-    FreightExtended(const string& id, int t, const string& d, FreightType type);
+    FreightExtended(const std::string& id, int t, const std::string& d, FreightType type); // Qualify std::
 
     FreightType getType() const;
     int getMaxCapacity() const;
     int getCurrentLoad() const;
     bool isFull() const;
     bool canAcceptMore() const;
-    bool assignCargo(const string& cargoId);
-    bool removeCargo(const string& cargoId);
-    const vector<string>& getAssignedCargos() const;
+    bool assignCargo(const std::string& cargoId); // Qualify std::
+    bool removeCargo(const std::string& cargoId); // Qualify std::
+    const std::vector<std::string>& getAssignedCargos() const; // Qualify std::
 
-    static string typeToString(FreightType type);
-    static FreightType stringToType(const string& typeStr);
+    static std::string typeToString(FreightType type); // Qualify std::
+    static FreightType stringToType(const std::string& typeStr); // Qualify std::
 };

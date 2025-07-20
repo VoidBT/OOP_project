@@ -1,26 +1,27 @@
+#pragma once // Add this include guard
 #include <vector>
 #include <string>
 #include <iostream>
 #include <memory>    // For shared_ptr
 
 // Assuming these headers provide necessary definitions for FreightExtended, Cargo, CargoGroup, FStorage, CStorage, and Match
-#include "FreightTypes.h" 
+#include "FreightTypes.h"
 #include "CargoGroup.h"
 #include "Match.h"
 #include "FStorage.h"
 #include "CStorage.h"
 
-using namespace std;
+// Removed: using namespace std; // Avoid in header files
 
 class ScheduleList {
 private:
-    vector<shared_ptr<FreightExtended>> freights;
-    vector<CargoGroup> cargoGroups;
-    vector<string> unassignedCargos;
-    vector<Match> matches;
+    std::vector<std::shared_ptr<FreightExtended>> freights; // Qualify std::
+    std::vector<CargoGroup> cargoGroups; // Qualify std::
+    std::vector<std::string> unassignedCargos; // Qualify std::
+    std::vector<Match> matches; // Qualify std::
 
 public:
-    void addFreight(shared_ptr<FreightExtended> freight);
+    void addFreight(std::shared_ptr<FreightExtended> freight); // Qualify std::
     void addCargoGroup(const CargoGroup& group);
 
     // Scheduling options
@@ -34,11 +35,11 @@ public:
     void displayUnassignedCargos() const;
 
     // File operations
-    void saveEnhancedSchedule(const string& filename) const;
+    void saveEnhancedSchedule(const std::string& filename) const; // Qualify std::
 
     // Original ScheduleList methods, adapted
     void matchFreightAndCargo(FStorage& fStorage, CStorage& cStorage);
-    const vector<Match>& getMatches() const;
+    const std::vector<Match>& getMatches() const; // Qualify std::
     void printAll() const;
 
 private:
