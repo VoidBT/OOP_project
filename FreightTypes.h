@@ -1,6 +1,3 @@
-#ifndef FREIGHTTYPES_H
-#define FREIGHTTYPES_H
-
 #include "Freight.h"
 #include <vector>
 #include <memory>
@@ -30,5 +27,3 @@ public:
     static string typeToString(FreightType type);
     static FreightType stringToType(const string& typeStr);
 };
-
-#endif

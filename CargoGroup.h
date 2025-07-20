@@ -1,6 +1,3 @@
-#ifndef CARGOGROUP_H
-#define CARGOGROUP_H
-
 #include "Cargo.h"
 #include <vector>
 #include <string>
@@ -35,5 +32,3 @@ public:
     void setDestination(const string& newDest);
     void setTimeWindow(int newWindow);
 };
-
-#endif

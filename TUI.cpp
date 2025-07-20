@@ -1,7 +1,8 @@
 #include "TUI.h"
-#include "EnhancedScheduleList.h"
+// #include "EnhancedScheduleList.h" // REMOVE THIS LINE
 #include <iostream>
 #include <iomanip>
+#include <limits> // Required for numeric_limits
 
 // Define static constants
 const string TUI::DEFAULT_CARGO_FILE = "cargo.txt";
@@ -31,8 +32,12 @@ void TUI::showSchedulingOptionsMenu() const {
     cout << "\nScheduling Options\n"
         << "==================\n"
         << "1. Match Freight and Cargo\n"
-        << "2. Display Matches\n"
-        << "3. Back to Main Menu\n"
+        << "2. Schedule by Arrival Time\n" // New option
+        << "3. Schedule by Freight Capacity\n" // New option
+        << "4. Display Matches\n"
+        << "5. Display Unassigned Cargos\n" // New option
+        << "6. Display Underutilized Freights\n" // New option
+        << "7. Back to Main Menu\n"
         << "Enter your choice: ";
 }
 
@@ -61,8 +66,12 @@ void TUI::showDisplayOptionsMenu() const {
         << "===============\n"
         << "1. Display All Cargos\n"
         << "2. Display All Freights\n"
-        << "3. Display Matches\n"
-        << "4. Back to Main Menu\n"
+        << "3. Display Matches (Original)\n" // Clarified to distinguish
+        << "4. Display Schedule by Arrival Time\n" // New option
+        << "5. Display Schedule by Freight Capacity\n" // New option
+        << "6. Display Underutilized Freights\n" // New option
+        << "7. Display Unassigned Cargos\n" // New option
+        << "8. Back to Main Menu\n"
         << "Enter your choice: ";
 }
 
@@ -80,9 +89,9 @@ void TUI::showFileOperationsMenu() const {
 
 FreightType TUI::getFreightTypeInput() const {
     cout << "Select Freight Type:\n"
-        << "1. Truck\n"
-        << "2. Ship\n"
-        << "3. Airplane\n"
+        << "1. Mini Mover\n"
+        << "2. Cargo Cruiser\n"
+        << "3. Mega Carrier\n"
         << "Enter your choice: ";
     int choice = getIntInput("");
     switch (choice) {
@@ -90,7 +99,7 @@ FreightType TUI::getFreightTypeInput() const {
     case 2: return FreightType::CARGO_CRUISER;
     case 3: return FreightType::MEGA_CARRIER;
     default:
-        cout << "Invalid choice. Defaulting to Truck.\n";
+        cout << "Invalid choice. Defaulting to Mega Carrier.\n";
         return FreightType::MEGA_CARRIER;
     }
 }
@@ -101,9 +110,7 @@ void TUI::getCargoGroupData(string& groupId, string& dest, int& maxSize) const {
     maxSize = getIntInput("Enter Maximum Size: ");
 }
 
-// [Previous menu functions remain the same...]
-
-void TUI::run(CStorage& cargoStorage, FStorage& freightStorage, EnhancedScheduleList& schedule) {
+void TUI::run(CStorage& cargoStorage, FStorage& freightStorage, ScheduleList& schedule) {
     // Load initial data
     FileManager::loadCargos(cargoFilename, cargoStorage);
     FileManager::loadFreights(freightFilename, freightStorage);
@@ -317,38 +324,47 @@ void TUI::displayFreight(const FStorage& storage) const {
     }
 }
 
-void TUI::displayMatches(const EnhancedScheduleList& schedule) const {
-    cout << "\nMatches List:\n";
-    cout << "=============\n";
-    for (const auto& match : schedule.getMatches()) {
-        cout << "Freight ID: " << match.freight.getID()
-            << ", Cargo ID: " << match.cargo.getID()
-            << ", Arrival Time: " << match.freight.getTime()
-            << ", Destination: " << match.freight.getDest() << "\n";
-    }
+void TUI::displayMatches(const ScheduleList& schedule) const {
+    // This now calls the original printAll on ScheduleList
+    // If you need specific "match" output, you'll need to iterate schedule.getMatches()
+    schedule.printAll();
 }
 
-void TUI::handleSchedulingOptions(EnhancedScheduleList& schedule, CStorage& cargoStorage, FStorage& freightStorage) {
+void TUI::handleSchedulingOptions(ScheduleList& schedule, CStorage& cargoStorage, FStorage& freightStorage) {
     int sub;
     do {
         showSchedulingOptionsMenu();
         sub = getMenuChoice();
         switch (sub) {
-        case 1: // Match Freight and Cargo
+        case 1: // Match Freight and Cargo (original logic)
             schedule.matchFreightAndCargo(freightStorage, cargoStorage);
             cout << "Freight and Cargo matched successfully.\n";
             break;
-        case 2: // Display Matches
+        case 2: // Schedule by Arrival Time
+            schedule.scheduleByArrivalTime();
+            cout << "Scheduling by arrival time completed.\n";
+            break;
+        case 3: // Schedule by Freight Capacity
+            schedule.scheduleByFreightCapacity();
+            cout << "Scheduling by freight capacity completed.\n";
+            break;
+        case 4: // Display Matches (now calls printAll)
             schedule.printAll();
             break;
-        case 3: break; // Back to Main Menu
+        case 5: // Display Unassigned Cargos
+            schedule.displayUnassignedCargos();
+            break;
+        case 6: // Display Underutilized Freights
+            schedule.displayUnderutilizedFreights();
+            break;
+        case 7: break; // Back to Main Menu
         default:
             cout << "Invalid choice. Try again.\n";
         }
-    } while (sub != 3);
+    } while (sub != 7);
 }
 
-void TUI::handleDisplayOptions(const EnhancedScheduleList& schedule, CStorage& cargoStorage, FStorage& freightStorage) const {
+void TUI::handleDisplayOptions(const ScheduleList& schedule, CStorage& cargoStorage, FStorage& freightStorage) const {
     int sub;
     do {
         showDisplayOptionsMenu();
@@ -360,12 +376,24 @@ void TUI::handleDisplayOptions(const EnhancedScheduleList& schedule, CStorage& c
         case 2: // Display All Freights
             displayFreight(freightStorage);
             break;
-        case 3: // Display Matches
+        case 3: // Display Matches (Original)
             displayMatches(schedule);
             break;
-        case 4: break; // Back to Main Menu
+        case 4: // Display Schedule by Arrival Time
+            schedule.displayByArrivalTime();
+            break;
+        case 5: // Display Schedule by Freight Capacity
+            schedule.displayByFreightCapacity();
+            break;
+        case 6: // Display Underutilized Freights
+            schedule.displayUnderutilizedFreights();
+            break;
+        case 7: // Display Unassigned Cargos
+            schedule.displayUnassignedCargos();
+            break;
+        case 8: break; // Back to Main Menu
         default:
             cout << "Invalid choice. Try again.\n";
         }
-    } while (sub != 4);
+    } while (sub != 8);
 }

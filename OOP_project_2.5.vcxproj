@@ -130,7 +130,6 @@
     <ClInclude Include="Cargo.h" />
     <ClInclude Include="CargoGroup.h" />
     <ClInclude Include="Cstorage.h" />
-    <ClInclude Include="EnhancedScheduleList.h" />
     <ClInclude Include="FIleManager.h" />
     <ClInclude Include="FilePrinter.h" />
     <ClInclude Include="Freight.h" />
@@ -145,7 +144,6 @@
     <ClCompile Include="Cargo.cpp" />
     <ClCompile Include="CargoGroup.cpp" />
     <ClCompile Include="Cstorage.cpp" />
-    <ClCompile Include="EnhancedScheduleList.cpp" />
     <ClCompile Include="FileManager.cpp" />
     <ClCompile Include="FilePrinter.cpp" />
     <ClCompile Include="Freight.cpp" />

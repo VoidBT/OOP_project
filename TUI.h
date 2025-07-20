@@ -6,8 +6,7 @@
 #include "FileManager.h"
 #include "CStorage.h"
 #include "FStorage.h"
-#include "ScheduleList.h"
-#include "EnhancedScheduleList.h"
+#include "ScheduleList.h" // Now includes all scheduling logic
 #include "CargoGroup.h"
 
 using namespace std;
@@ -38,7 +37,7 @@ public:
     TUI();
 
     // Main UI loop
-    void run(CStorage& cargoStorage, FStorage& freightStorage, EnhancedScheduleList& schedule);
+    void run(CStorage& cargoStorage, FStorage& freightStorage, ScheduleList& schedule);
 
     // Menus
     void showMainMenu() const;
@@ -60,11 +59,11 @@ public:
     // Display methods
     void displayCargo(const CStorage& storage) const;
     void displayFreight(const FStorage& storage) const;
-    void displayMatches(const EnhancedScheduleList& schedule) const;
+    void displayMatches(const ScheduleList& schedule) const;
 
     // Scheduling and display handlers
-    void handleSchedulingOptions(EnhancedScheduleList& schedule, CStorage& cargoStorage, FStorage& freightStorage);
-    void handleDisplayOptions(const EnhancedScheduleList& schedule, CStorage& cargoStorage, FStorage& freightStorage) const;
+    void handleSchedulingOptions(ScheduleList& schedule, CStorage& cargoStorage, FStorage& freightStorage);
+    void handleDisplayOptions(const ScheduleList& schedule, CStorage& cargoStorage, FStorage& freightStorage) const;
 
     // Filename getters
     string getCargoFilename() const { return cargoFilename; }
