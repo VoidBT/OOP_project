@@ -1,82 +1,76 @@
-#pragma once // Add this include guard
-#include <iostream>
-#include <iomanip>
+#pragma once // Include guard
 #include <string>
-#include <vector> // Required for std::vector<std::string> headers
-#include <limits> // Required for std::numeric_limits
-#include <memory> // For std::make_shared (used in TUI.cpp for FreightExtended)
+#include <vector>
+#include <memory> // For std::shared_ptr and std::make_shared
 
-#include "FilePrinter.h"
-#include "FileManager.h"
+// Ensure all necessary headers are included
 #include "CStorage.h"
 #include "FStorage.h"
-#include "ScheduleList.h" // Now includes all scheduling logic
+#include "ScheduleList.h"
 #include "CargoGroup.h"
-#include "FreightTypes.h" // Required for FreightType enum and FreightExtended class definition
-
-// It's generally better to avoid 'using namespace std;' in headers
-// to prevent potential name collisions in other files that include this header.
-// Instead, qualify names with 'std::' or include 'using namespace std;' in the .cpp file.
+#include "FreightTypes.h" // For FreightExtended and FreightType
+#include "FileManager.h"  // For FileManager and FilePrinter
 
 class TUI {
 private:
     std::string cargoFilename;
     std::string freightFilename;
     std::string matchesFilename;
-    std::string enhancedScheduleFilename; // New: for saving enhanced schedules
+    std::string enhancedScheduleFilename;
 
-    // Static constants for default files
+    // Static const members for default file names
     static const std::string DEFAULT_CARGO_FILE;
     static const std::string DEFAULT_FREIGHT_FILE;
     static const std::string DEFAULT_MATCHES_FILE;
-    static const std::string DEFAULT_ENHANCED_SCHEDULE_FILE; // New default filename
+    static const std::string DEFAULT_ENHANCED_SCHEDULE_FILE;
 
-    // Menus
-    void showSchedulingOptionsMenu() const;
+public:
+    TUI();
+    void run(CStorage& cargoStorage, FStorage& freightStorage, ScheduleList& schedule);
+
+private:
+    // Menu Display Functions
+    void showMainMenu() const;
     void showCargoOperationsMenu() const;
     void showFreightOperationsMenu() const;
+    void showCargoGroupOperationsMenu() const;
+    void showSchedulingOptionsMenu() const;
     void showDisplayOptionsMenu() const;
     void showFileOperationsMenu() const;
-    void showCargoGroupOperationsMenu() const; // New: Menu for CargoGroup
+    void showCurrentFiles() const;
 
-    // Input helpers (made private as they are primarily internal to TUI)
+    // Input Helper Functions
+    int getMenuChoice() const;
+    std::string getInput(const std::string& prompt) const;
+    int getIntInput(const std::string& prompt) const;
     FreightType getFreightTypeInput() const;
     void getCargoGroupData(std::string& groupId, std::string& dest, int& maxSize) const;
-    int getIntInput(const std::string& prompt) const;
-    std::string getInput(const std::string& prompt) const;
 
-    // Private helper methods for operations
+    // Handler Methods for Operations
     void handleAddCargo(CStorage& cargoStorage) const;
     void handleEditCargo(CStorage& cargoStorage) const;
     void handleDeleteCargo(CStorage& cargoStorage) const;
+    void handleDisplayCargos() const; // Renamed from printAll to match new context
 
     void handleAddFreight(FStorage& freightStorage) const;
     void handleEditFreight(FStorage& freightStorage) const;
     void handleDeleteFreight(FStorage& freightStorage) const;
-    void handleAddFreightExtended(ScheduleList& schedule) const; // New: for adding FreightExtended to ScheduleList
+    void handleListAllStoredFreights(FStorage& freightStorage) const; // Renamed for clarity
+    void handleAddFreightExtended(ScheduleList& schedule) const; // New: Adds FreightExtended to schedule
+    void handleDisplayExtendedFreights(ScheduleList& schedule) const; // NEW: Display freights in ScheduleList with types
 
-    void handleAddCargoGroup(ScheduleList& schedule) const; // New: for adding CargoGroup to ScheduleList
-    void handleEditCargoGroup(); // Placeholder, requires more logic
-    void handleDeleteCargoGroup(); // Placeholder, requires more logic
+    void handleAddCargoGroup(ScheduleList& schedule) const;
+    void handleDisplayCargoGroups(ScheduleList& schedule) const; // NEW: Display cargo groups in ScheduleList
+    void handleEditCargoGroup(); // Placeholder
+    void handleDeleteCargoGroup(); // Placeholder
 
     void handleLoadAllData(CStorage& cargoStorage, FStorage& freightStorage) const;
     void handleSaveAllData(CStorage& cargoStorage, FStorage& freightStorage, ScheduleList& schedule) const;
 
-public:
-    TUI();
-
-    // Main UI loop
-    void run(CStorage& cargoStorage, FStorage& freightStorage, ScheduleList& schedule);
-
-    // Menus (kept public as they are entry points)
-    void showMainMenu() const;
-    int getMenuChoice() const;
-    void showCurrentFiles() const;
-
-    // File operations (kept public for direct call from main menu handler)
+    // File Path Change Functions
     void changeCargoFile();
     void changeFreightFile();
     void changeMatchesFile();
-    void changeEnhancedScheduleFile(); // New: for enhanced schedule file
+    void changeEnhancedScheduleFile();
     void resetToDefaultFiles();
 };

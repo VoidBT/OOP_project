@@ -151,7 +151,9 @@
     <ClCompile Include="Fstorage.cpp" />
     <ClCompile Include="Logistic.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Match.cpp" />
+    <ClCompile Include="Match.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="ScheduleList.cpp" />
     <ClCompile Include="TUI.cpp" />
   </ItemGroup>

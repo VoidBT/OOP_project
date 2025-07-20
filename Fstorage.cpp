@@ -1,57 +1,57 @@
 #include "FStorage.h"
-#include <fstream> // Not strictly needed anymore if file I/O is moved
-#include <algorithm>
+#include <algorithm> // For std::remove_if
 #include <iostream>
-#include <sstream> // Not strictly needed anymore if parsing is moved
 
 using namespace std;
 
-void FStorage::addFreight(const Freight& f) {
-    freight.push_back(f);
+void FStorage::addFreight(const Freight& freight) {
+    freights.push_back(freight);
 }
 
 void FStorage::editFreight(const string& id, int newTime, const string& newDest) {
-    for (auto& f : freight) {
-        if (f.getID() == id) {
-            f.setTime(newTime);
-            f.setDest(newDest);
-            break;
-        }
+    Freight* freight = findFreight(id);
+    if (freight) {
+        freight->setTime(newTime);
+        freight->setDest(newDest);
+    }
+    else {
+        cout << "Freight with ID " << id << " not found.\n";
     }
 }
 
 void FStorage::deleteFreight(const string& id) {
-    freight.erase(
-        remove_if(freight.begin(), freight.end(),
-            [&id](const Freight& f) { return f.getID() == id; }),
-        freight.end()
-    );
+    auto it = remove_if(freights.begin(), freights.end(),
+        [&id](const Freight& f) { return f.getID() == id; });
+    if (it != freights.end()) {
+        freights.erase(it, freights.end());
+    }
+    else {
+        cout << "Freight with ID " << id << " not found.\n";
+    }
 }
 
-void FStorage::clearFreights() {
-    freight.clear();
+const vector<Freight>& FStorage::getAllFreights() const {
+    return freights;
 }
 
-const Freight* FStorage::getByTimeAndDest(int time, const string& dest) const {
-    for (const auto& f : freight) {
-        if (f.getTime() == time && f.getDest() == dest) {
-            return &f;
+void FStorage::printAll() const {
+    cout << "\n--- All Freights ---\n";
+    if (freights.empty()) {
+        cout << "No freights available.\n";
+        return;
+    }
+    for (const auto& freight : freights) {
+        cout << "ID: " << freight.getID()
+            << ", Time: " << freight.getTime()
+            << ", Destination: " << freight.getDest() << "\n";
+    }
+}
+
+Freight* FStorage::findFreight(const string& id) {
+    for (auto& freight : freights) {
+        if (freight.getID() == id) {
+            return &freight;
         }
     }
     return nullptr;
 }
-
-const vector<Freight>& FStorage::getAllFreights() const {
-    return freight;
-}
-
-void FStorage::printAll() const {
-    for (const auto& f : freight) {
-        cout << f.getID() << " | "
-            << f.getTime() << " | "
-            << f.getDest() << "\n";
-    }
-}
-
-// Removed loadFromFile and saveToFile implementations from here.
-// They are now handled by FileManager.

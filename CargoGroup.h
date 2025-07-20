@@ -1,16 +1,14 @@
-#pragma once // Add this include guard
+#pragma once // Include guard
 #include <vector>
 #include <string>
-#include "Cargo.h" // Assuming Cargo.h defines Cargo
-
-// Removed: using namespace std; // Avoid in header files
+#include "Cargo.h" // Make sure Cargo.h is included
 
 class CargoGroup {
 private:
-    std::string groupId; // Qualify std::
-    std::string destination; // Qualify std::
+    std::string groupId;
+    std::string destination;
     int maxSize;
-    std::vector<Cargo> cargos; // Qualify std::
+    std::vector<Cargo> cargos;
     int timeWindow; // in minutes
 
 public:

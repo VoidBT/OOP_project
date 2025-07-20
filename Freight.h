@@ -1,18 +1,17 @@
-#pragma once
+#pragma once // Include guard
 #include <string>
-#include "Logistic.h"
 
-using namespace std;
-
-class Freight : public Logistic {
+class Freight {
 private:
+    std::string id;
     int time;
-    string dest;
+    std::string dest;
+
 public:
-    Freight(const string& id, int t, const string& d);
+    Freight(const std::string& id, int time, const std::string& dest);
+    std::string getID() const;
     int getTime() const;
-    string getDest() const;
-    void setTime(int t);
-    void setDest(const string& d);
-    void setTimeAndDest(int t2, const string& d2);
+    std::string getDest() const;
+    void setTime(int newTime);
+    void setDest(const std::string& newDest);
 };

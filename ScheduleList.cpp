@@ -1,9 +1,9 @@
 #include "ScheduleList.h"
-#include <algorithm> // For std::sort, std::remove
+#include <algorithm> // For std::sort, std::remove, std::copy_if
 #include <fstream>   // For file operations
 #include <iomanip>   // For output formatting
+#include <limits>    // For std::numeric_limits
 
-// Add back 'using namespace std;' here
 using namespace std;
 
 void ScheduleList::addFreight(shared_ptr<FreightExtended> freight) {
@@ -14,79 +14,173 @@ void ScheduleList::addCargoGroup(const CargoGroup& group) {
     cargoGroups.push_back(group);
 }
 
-void ScheduleList::scheduleByArrivalTime() {
-    // Sort freights and cargos by time
+// Helper to reset freight assignments and unassigned cargos before a new scheduling run
+void ScheduleList::resetFreightAssignments() {
+    for (auto& freight : freights) {
+        freight->clearAssignedCargos(); // Assuming you add this method to FreightExtended
+    }
+    unassignedCargos.clear();
+}
+
+// Refined `canAssignToFreight` based on Requirement 4
+bool ScheduleList::canAssignToFreight(const FreightExtended& freight, const Cargo& cargo) const {
+    // 1. Freight must be able to accept more cargo
+    // 2. Destinations must match
+    // 3. Arrival timing requirement:
+    //    freight.time must be >= cargo.time AND
+    //    freight.time - cargo.time <= 15
+    return freight.canAcceptMore() &&
+        freight.getDest() == cargo.getDest() &&
+        freight.getTime() >= cargo.getTime() &&
+        (freight.getTime() - cargo.getTime()) <= 15;
+}
+
+// Helper to assign a single cargo to the best available freight (earliest time first)
+bool ScheduleList::assignCargoToBestFreight(const Cargo& cargo) {
+    // Sort freights by their time to find the earliest suitable one (Requirement 5 implication)
+    // This ensures that even if you're assigning individually, you're trying to meet time requirements.
     sort(freights.begin(), freights.end(),
         [](const auto& a, const auto& b) {
             return a->getTime() < b->getTime();
         });
 
-    for (auto& group : cargoGroups) {
-        // Need a modifiable copy of cargos for sorting if the original vector is const
-        // If getCargos() returns a const reference, you can't sort it directly unless you make a copy.
-        // Or change getCargos() to return by value or non-const reference if this sort is intended to modify the group's internal order.
-        // For now, assuming cargos is a local copy for sorting purposes.
-        vector<Cargo> cargos = group.getCargos(); // Make a copy to sort
-        sort(cargos.begin(), cargos.end(),
-            [](const Cargo& a, const Cargo& b) {
-                return a.getTime() < b.getTime();
-            });
-
-        // Try to assign each cargo to the earliest possible freight
-        for (const auto& cargo : cargos) {
-            bool assigned = false;
-            for (auto& freight : freights) {
-                if (canAssignToFreight(*freight, cargo)) {
-                    freight->assignCargo(cargo.getID());
-                    assigned = true;
-                    // Break once assigned to the first suitable freight
-                    break;
-                }
-            }
-            if (!assigned) {
-                unassignedCargos.push_back(cargo.getID());
-            }
+    for (auto& freight : freights) {
+        if (canAssignToFreight(*freight, cargo)) {
+            freight->assignCargo(cargo.getID());
+            return true;
         }
     }
+    return false; // Could not assign this cargo
 }
 
+
+void ScheduleList::scheduleByArrivalTime() {
+    resetFreightAssignments(); // Clear previous assignments before new scheduling
+
+    // Sort freights by their time (relevant for matching cargos to earliest freight)
+    sort(freights.begin(), freights.end(),
+        [](const auto& a, const auto& b) {
+            return a->getTime() < b->getTime();
+        });
+
+    // Process cargos from groups, prioritizing by their individual arrival times (Requirement 5)
+    // We need to collect all individual cargos from all groups first to sort them globally.
+    vector<Cargo> allCargosFromGroups;
+    for (const auto& group : cargoGroups) {
+        // Copy cargos from the group to the temporary vector
+        // This ensures we're working with a modifiable list of individual cargos
+        // It also handles Requirement 3's implicit need to treat individual cargos
+        // when splitting a group.
+        const auto& groupCargos = group.getCargos();
+        allCargosFromGroups.insert(allCargosFromGroups.end(), groupCargos.begin(), groupCargos.end());
+    }
+
+    // Sort all individual cargos by their time (Requirement 5)
+    sort(allCargosFromGroups.begin(), allCargosFromGroups.end(),
+        [](const Cargo& a, const Cargo& b) {
+            return a.getTime() < b.getTime();
+        });
+
+    // Attempt to assign each sorted cargo
+    for (const auto& cargo : allCargosFromGroups) {
+        if (!assignCargoToBestFreight(cargo)) { // Uses the helper with time-sorted freights
+            unassignedCargos.push_back(cargo.getID());
+        }
+    }
+    cout << "Scheduling by arrival time completed. " << unassignedCargos.size() << " cargos unassigned.\n";
+}
+
+
 void ScheduleList::scheduleByFreightCapacity() {
-    // Sort freights by capacity (descending)
+    resetFreightAssignments(); // Clear previous assignments before new scheduling
+
+    // Sort freights by capacity (descending) to prioritize filling larger freights (Requirement 6)
     sort(freights.begin(), freights.end(),
         [](const auto& a, const auto& b) {
             return a->getMaxCapacity() > b->getMaxCapacity();
         });
 
+    // Iterate through cargo groups
     for (auto& group : cargoGroups) {
-        // Try to assign entire group first
-        bool groupAssigned = false;
+        // Collect cargos from the current group
+        vector<Cargo> currentGroupCargos = group.getCargos(); // Make a copy
+
+        // Try to assign the whole group to the first suitable freight that can take it
+        // This attempts to keep groups together if possible, aligning with Req 3's "grouped by destination"
+        bool groupAssignedWhole = false;
         for (auto& freight : freights) {
+            // Check if this freight can take all cargos in the current group
             if (freight->canAcceptMore() &&
-                freight->getCurrentLoad() + group.getSize() <= freight->getMaxCapacity() &&
-                freight->getDest() == group.getDestination()) { // Add destination check
-                for (const auto& cargo : group.getCargos()) {
-                    freight->assignCargo(cargo.getID());
+                freight->getCurrentLoad() + currentGroupCargos.size() <= freight->getMaxCapacity() &&
+                freight->getDest() == group.getDestination()) { // Destination must match group's destination
+
+                bool allCargosMatchTime = true;
+                for (const auto& cargo : currentGroupCargos) {
+                    if (!canAssignToFreight(*freight, cargo)) { // Check time for ALL cargos in group
+                        allCargosMatchTime = false;
+                        break;
+                    }
                 }
-                groupAssigned = true;
-                break;
+
+                if (allCargosMatchTime) {
+                    for (const auto& cargo : currentGroupCargos) {
+                        freight->assignCargo(cargo.getID());
+                    }
+                    groupAssignedWhole = true;
+                    break; // Group assigned, move to next cargo group
+                }
             }
         }
 
-        if (!groupAssigned) {
-            splitAndAssignGroup(group);
+        if (!groupAssignedWhole) {
+            // If the whole group cannot be assigned, split and assign individual cargos (Requirement 3)
+            // Sort cargos within the group by time (optional, but can help with time-based assignment if splitting)
+            sort(currentGroupCargos.begin(), currentGroupCargos.end(),
+                [](const Cargo& a, const Cargo& b) {
+                    return a.getTime() < b.getTime();
+                });
+
+            for (const auto& cargo : currentGroupCargos) {
+                // Find the best freight for this individual cargo based on capacity preference first, then time.
+                // Re-sort freights by available capacity to find the best fit for this individual cargo.
+                // This is a subtle point: for *individual* cargos, you still want to fill up freights.
+                sort(freights.begin(), freights.end(),
+                    [](const auto& a, const auto& b) {
+                        // Prioritize freights that can take more, then by current load (more full first)
+                        if (a->getMaxCapacity() != b->getMaxCapacity()) {
+                            return a->getMaxCapacity() > b->getMaxCapacity();
+                        }
+                        return a->getCurrentLoad() > b->getCurrentLoad();
+                    });
+
+                bool assigned = false;
+                for (auto& freight : freights) {
+                    if (canAssignToFreight(*freight, cargo)) {
+                        freight->assignCargo(cargo.getID());
+                        assigned = true;
+                        break;
+                    }
+                }
+                if (!assigned) {
+                    unassignedCargos.push_back(cargo.getID());
+                }
+            }
         }
     }
+    cout << "Scheduling by freight capacity completed. " << unassignedCargos.size() << " cargos unassigned.\n";
 }
+
 
 void ScheduleList::displayByArrivalTime() const {
     vector<shared_ptr<FreightExtended>> sortedFreights = freights;
+    // Sort freights by their own time for display
     sort(sortedFreights.begin(), sortedFreights.end(),
         [](const auto& a, const auto& b) {
             return a->getTime() < b->getTime();
         });
 
-    cout << "\nScheduling Plan by Arrival Time:\n";
-    cout << "================================\n";
+    cout << "\nScheduling Plan Sorted by Freight Arrival Time:\n";
+    cout << "===============================================\n";
     for (const auto& freight : sortedFreights) {
         cout << "Freight " << freight->getID()
             << " (" << FreightExtended::typeToString(freight->getType()) << ")"
@@ -94,46 +188,69 @@ void ScheduleList::displayByArrivalTime() const {
             << ", Destination: " << freight->getDest()
             << ", Load: " << freight->getCurrentLoad() << "/" << freight->getMaxCapacity() << "\n";
 
-        for (const auto& cargoId : freight->getAssignedCargos()) {
-            cout << "  - Cargo: " << cargoId << "\n";
+        if (!freight->getAssignedCargos().empty()) {
+            cout << "  Assigned Cargos (ID): \n";
+            for (const auto& cargoId : freight->getAssignedCargos()) {
+                cout << "    - " << cargoId << "\n";
+            }
+        }
+        else {
+            cout << "  No cargos assigned.\n";
         }
     }
 }
 
 void ScheduleList::displayByFreightCapacity() const {
     vector<shared_ptr<FreightExtended>> sortedFreights = freights;
+    // Sort freights by capacity (descending), then by current load (descending) for better utilization view
     sort(sortedFreights.begin(), sortedFreights.end(),
         [](const auto& a, const auto& b) {
-            return a->getMaxCapacity() > b->getMaxCapacity();
+            if (a->getMaxCapacity() != b->getMaxCapacity()) {
+                return a->getMaxCapacity() > b->getMaxCapacity();
+            }
+            return a->getCurrentLoad() > b->getCurrentLoad(); // More loaded first
         });
 
-    cout << "\nScheduling Plan by Freight Capacity:\n";
-    cout << "===================================\n";
+    cout << "\nScheduling Plan Sorted by Freight Capacity (Most Used First):\n";
+    cout << "============================================================\n";
     for (const auto& freight : sortedFreights) {
         cout << "Freight " << freight->getID()
             << " (" << FreightExtended::typeToString(freight->getType()) << ")"
             << " - Capacity: " << freight->getMaxCapacity()
             << ", Load: " << freight->getCurrentLoad()
-            << ", Destination: " << freight->getDest() << "\n";
+            << ", Destination: " << freight->getDest()
+            << ", Time: " << freight->getTime() << "\n";
 
-        // Display assigned cargos for this freight as well, for completeness
-        for (const auto& cargoId : freight->getAssignedCargos()) {
-            cout << "  - Cargo: " << cargoId << "\n";
+        if (!freight->getAssignedCargos().empty()) {
+            cout << "  Assigned Cargos (ID): \n";
+            for (const auto& cargoId : freight->getAssignedCargos()) {
+                cout << "    - " << cargoId << "\n";
+            }
+        }
+        else {
+            cout << "  No cargos assigned.\n";
         }
     }
 }
 
 void ScheduleList::displayUnderutilizedFreights() const {
-    cout << "\nUnderutilized Freights:\n";
-    cout << "======================\n";
+    cout << "\nUnderutilized Freights (Not at Full Capacity):\n";
+    cout << "=============================================\n";
+    bool found = false;
     for (const auto& freight : freights) {
         if (freight->getCurrentLoad() < freight->getMaxCapacity()) {
             cout << "Freight " << freight->getID()
-                << " - Capacity: " << freight->getCurrentLoad() << "/" << freight->getMaxCapacity()
+                << " - Type: " << FreightExtended::typeToString(freight->getType())
+                << ", Current Load: " << freight->getCurrentLoad()
+                << ", Max Capacity: " << freight->getMaxCapacity()
                 << " (" << (freight->getMaxCapacity() - freight->getCurrentLoad()) << " slots available)"
                 << ", Destination: " << freight->getDest()
                 << ", Time: " << freight->getTime() << "\n";
+            found = true;
         }
+    }
+    if (!found) {
+        cout << "All freights are at full capacity or no freights available.\n";
     }
 }
 
@@ -157,10 +274,18 @@ void ScheduleList::saveEnhancedSchedule(const string& filename) const {
         return;
     }
 
-    file << "Freight ID | Type | Capacity | Destination | Time | Assigned Cargos\n";
-    file << "------------------------------------------------------------------\n";
+    file << "Freight ID | Type         | Load/Cap | Destination | Time | Assigned Cargos\n";
+    file << "--------------------------------------------------------------------------------\n";
 
-    for (const auto& freight : freights) {
+    // Sort freights by ID for consistent output
+    vector<shared_ptr<FreightExtended>> sortedFreights = freights;
+    sort(sortedFreights.begin(), sortedFreights.end(),
+        [](const auto& a, const auto& b) {
+            return a->getID() < b->getID();
+        });
+
+
+    for (const auto& freight : sortedFreights) {
         file << setw(10) << left << freight->getID() << " | "
             << setw(12) << left << FreightExtended::typeToString(freight->getType()) << " | "
             << setw(8) << left << to_string(freight->getCurrentLoad()) + "/" + to_string(freight->getMaxCapacity()) << " | "
@@ -170,7 +295,7 @@ void ScheduleList::saveEnhancedSchedule(const string& filename) const {
         bool firstCargo = true;
         for (const auto& cargoId : freight->getAssignedCargos()) {
             if (!firstCargo) {
-                file << ", "; // Separate cargo IDs with a comma
+                file << ", ";
             }
             file << cargoId;
             firstCargo = false;
@@ -187,29 +312,27 @@ void ScheduleList::saveEnhancedSchedule(const string& filename) const {
     cout << "Enhanced schedule saved to " << filename << endl;
 }
 
+// This function remains for its original purpose of finding "basic" matches
+// It does NOT assign cargos to freights' internal assignedCargos list.
 void ScheduleList::matchFreightAndCargo(FStorage& fStorage, CStorage& cStorage) {
     matches.clear();
-    // This part of the logic needs to be revisited.
-    // The previous implementation was matching based on direct Freight object in fStorage
-    // and Cargo in cStorage. However, schedule.freights now holds FreightExtended.
-    // This function will primarily match FreightExtended in `this->freights`
-    // with Cargos in `cStorage` based on time and destination.
-    // It's a "basic" match, not leveraging the advanced scheduling.
+    // This function can be simplified if its role is just to find all potential basic matches.
+    // It should ideally use Freight objects from FStorage and Cargo objects from CStorage directly,
+    // not FreightExtended objects from the internal 'freights' list, unless its purpose is
+    // to match what's already in the schedule.
 
-    for (const auto& freightExt : freights) {
-        // Iterate through all cargos in cStorage to find a match
-        const vector<Cargo>& allCargos = cStorage.getAllCargos();
+    // Let's assume its purpose is to find matches between all available FStorage freights
+    // and CStorage cargos, for an initial report.
+    const vector<Freight>& allBasicFreights = fStorage.getAllFreights();
+    const vector<Cargo>& allCargos = cStorage.getAllCargos();
+
+    for (const auto& freight : allBasicFreights) { // Use basic Freight objects here
         for (const auto& cargo : allCargos) {
-            if (freightExt->getDest() == cargo.getDest() &&
-                abs(freightExt->getTime() - cargo.getTime()) <= 15) { // Within 15-minute window
-                // Found a match, create a Match object
-                // Note: The Match constructor takes Freight and Cargo.
-                // freightExt is a shared_ptr<FreightExtended>, which is a Freight.
-                matches.push_back(Match(*freightExt, cargo));
-                // Assuming one cargo can be matched per freight in this basic matching
-                // or you might want to find the "best" match or all possible matches.
-                // For simplicity, we add the first valid match.
-                break; // Move to the next freight
+            // Match based on destination and the 15-minute time window
+            if (freight.getDest() == cargo.getDest() &&
+                freight.getTime() >= cargo.getTime() && // Freight cannot depart before cargo arrives
+                (freight.getTime() - cargo.getTime()) <= 15) { // And not too early
+                matches.push_back(Match(freight, cargo));
             }
         }
     }
@@ -221,19 +344,22 @@ const vector<Match>& ScheduleList::getMatches() const {
 }
 
 void ScheduleList::printAll() const {
-    cout << "\nSchedule List (All):\n";
-    cout << "=======================\n";
-    if (freights.empty() && cargoGroups.empty() && unassignedCargos.empty() && matches.empty()) {
-        cout << "No schedule data to display.\n";
-        return;
-    }
+    cout << "\nSchedule List (All Data):\n";
+    cout << "===========================\n";
 
-    cout << "\n--- Scheduled Freights ---\n";
+    cout << "\n--- Freights in Schedule ---\n";
     if (freights.empty()) {
         cout << "No freights added to schedule.\n";
     }
     else {
-        for (const auto& freight : freights) {
+        // Sort freights by ID for consistent output
+        vector<shared_ptr<FreightExtended>> sortedFreights = freights;
+        sort(sortedFreights.begin(), sortedFreights.end(),
+            [](const auto& a, const auto& b) {
+                return a->getID() < b->getID();
+            });
+
+        for (const auto& freight : sortedFreights) {
             cout << "Freight ID: " << freight->getID()
                 << ", Type: " << FreightExtended::typeToString(freight->getType())
                 << ", Time: " << freight->getTime()
@@ -244,8 +370,11 @@ void ScheduleList::printAll() const {
                 cout << "None";
             }
             else {
+                bool first = true;
                 for (const auto& cargoId : freight->getAssignedCargos()) {
-                    cout << cargoId << " ";
+                    if (!first) cout << ", ";
+                    cout << cargoId;
+                    first = false;
                 }
             }
             cout << "\n";
@@ -257,7 +386,14 @@ void ScheduleList::printAll() const {
         cout << "No cargo groups added.\n";
     }
     else {
-        for (const auto& group : cargoGroups) {
+        // Sort cargo groups by ID for consistent output
+        vector<CargoGroup> sortedGroups = cargoGroups;
+        sort(sortedGroups.begin(), sortedGroups.end(),
+            [](const auto& a, const auto& b) {
+                return a.getGroupId() < b.getGroupId();
+            });
+
+        for (const auto& group : sortedGroups) {
             cout << "Group ID: " << group.getGroupId()
                 << ", Destination: " << group.getDestination()
                 << ", Size: " << group.getSize() << "/" << group.getMaxSize() << "\n";
@@ -266,8 +402,11 @@ void ScheduleList::printAll() const {
                 cout << "None";
             }
             else {
+                bool first = true;
                 for (const auto& cargo : group.getCargos()) {
-                    cout << cargo.getID() << " ";
+                    if (!first) cout << ", ";
+                    cout << cargo.getID();
+                    first = false;
                 }
             }
             cout << "\n";
@@ -276,7 +415,10 @@ void ScheduleList::printAll() const {
 
     if (!unassignedCargos.empty()) {
         cout << "\n--- Unassigned Cargos ---\n";
-        for (const auto& cargoId : unassignedCargos) {
+        // Sort unassigned cargos for consistent output
+        vector<string> sortedUnassigned = unassignedCargos;
+        sort(sortedUnassigned.begin(), sortedUnassigned.end());
+        for (const auto& cargoId : sortedUnassigned) {
             cout << "Cargo ID: " << cargoId << "\n";
         }
     }
@@ -284,10 +426,19 @@ void ScheduleList::printAll() const {
         cout << "\nNo unassigned cargos.\n";
     }
 
-
     if (!matches.empty()) {
-        cout << "\n--- Original Matches (from matchFreightAndCargo) ---\n";
-        for (const auto& m : matches) {
+        cout << "\n--- Basic Matches (from matchFreightAndCargo) ---\n";
+        // Sort matches for consistent output
+        vector<Match> sortedMatches = matches;
+        sort(sortedMatches.begin(), sortedMatches.end(),
+            [](const Match& a, const Match& b) {
+                if (a.freight.getID() != b.freight.getID()) {
+                    return a.freight.getID() < b.freight.getID();
+                }
+                return a.cargo.getID() < b.cargo.getID();
+            });
+
+        for (const auto& m : sortedMatches) {
             cout << "Freight: " << m.freight.getID() << " | "
                 << "Cargo: " << m.cargo.getID() << " | "
                 << "F Time: " << m.freight.getTime() << " | "
@@ -297,27 +448,4 @@ void ScheduleList::printAll() const {
     else {
         cout << "\nNo basic matches found.\n";
     }
-}
-
-void ScheduleList::splitAndAssignGroup(const CargoGroup& group) {
-    for (const auto& cargo : group.getCargos()) {
-        bool assigned = false;
-        for (auto& freight : freights) {
-            if (canAssignToFreight(*freight, cargo)) {
-                freight->assignCargo(cargo.getID());
-                assigned = true;
-                break;
-            }
-        }
-        if (!assigned) {
-            unassignedCargos.push_back(cargo.getID());
-        }
-    }
-}
-
-bool ScheduleList::canAssignToFreight(const FreightExtended& freight, const Cargo& cargo) const {
-    // Check if freight can accept more, has same destination, and time is within a 15-minute window
-    return freight.canAcceptMore() &&
-        freight.getDest() == cargo.getDest() &&
-        abs(freight.getTime() - cargo.getTime()) <= 15; // Within 15-minute window
 }

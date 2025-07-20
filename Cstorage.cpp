@@ -1,51 +1,32 @@
 #include "CStorage.h"
-#include <fstream> // Not strictly needed anymore if file I/O is moved
-#include <algorithm>
+#include <algorithm> // For std::remove_if
 #include <iostream>
-#include <sstream> // Not strictly needed anymore if parsing is moved
 
 using namespace std;
 
-void CStorage::addCargo(const Cargo& c) {
-    cargos.push_back(c);
+void CStorage::addCargo(const Cargo& cargo) {
+    cargos.push_back(cargo);
 }
 
 void CStorage::editCargo(const string& id, int newTime, const string& newDest) {
-    for (auto& c : cargos) {
-        if (c.getID() == id) {
-            c.setTime(newTime);
-            c.setDest(newDest);
-            break;
-        }
+    Cargo* cargo = findCargo(id);
+    if (cargo) {
+        cargo->setTime(newTime);
+        cargo->setDest(newDest);
+    }
+    else {
+        cout << "Cargo with ID " << id << " not found.\n";
     }
 }
 
 void CStorage::deleteCargo(const string& id) {
-    cargos.erase(
-        remove_if(cargos.begin(), cargos.end(),
-            [&id](const Cargo& c) { return c.getID() == id; }),
-        cargos.end()
-    );
-}
-
-void CStorage::clearCargos() { // Implementation for clearCargos
-    cargos.clear();
-}
-
-const Cargo* CStorage::getByTimeAndDest(int time, const string& dest) const {
-    for (const auto& c : cargos) {
-        if (c.getTime() == time && c.getDest() == dest) {
-            return &c;
-        }
+    auto it = remove_if(cargos.begin(), cargos.end(),
+        [&id](const Cargo& c) { return c.getID() == id; });
+    if (it != cargos.end()) {
+        cargos.erase(it, cargos.end());
     }
-    return nullptr;
-}
-
-void CStorage::printAll() const {
-    for (const auto& c : cargos) {
-        cout << c.getID() << " | "
-            << c.getTime() << " | "
-            << c.getDest() << "\n";
+    else {
+        cout << "Cargo with ID " << id << " not found.\n";
     }
 }
 
@@ -53,5 +34,24 @@ const vector<Cargo>& CStorage::getAllCargos() const {
     return cargos;
 }
 
-// Removed loadFromFile and saveToFile implementations from here.
-// They are now handled by FileManager.
+void CStorage::printAll() const {
+    cout << "\n--- All Cargos ---\n";
+    if (cargos.empty()) {
+        cout << "No cargos available.\n";
+        return;
+    }
+    for (const auto& cargo : cargos) {
+        cout << "ID: " << cargo.getID()
+            << ", Time: " << cargo.getTime()
+            << ", Destination: " << cargo.getDest() << "\n";
+    }
+}
+
+Cargo* CStorage::findCargo(const string& id) {
+    for (auto& cargo : cargos) {
+        if (cargo.getID() == id) {
+            return &cargo;
+        }
+    }
+    return nullptr;
+}

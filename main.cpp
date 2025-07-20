@@ -1,17 +1,16 @@
-#include "TUI.h"
+#include <iostream>
 #include "CStorage.h"
 #include "FStorage.h"
-#include "ScheduleList.h" // Keep this, as it's the class with all the functionality now
+#include "ScheduleList.h"
+#include "TUI.h"
 
 int main() {
     CStorage cargoStorage;
     FStorage freightStorage;
-    ScheduleList schedule; // Correctly using ScheduleList
+    ScheduleList schedule;
+    TUI tui;
 
-    TUI ui;
-    // The error C2664 here implies that ScheduleList is not fully defined due to earlier redefinition errors.
-    // Once CargoGroup.h and FreightTypes.h are properly guarded, this should resolve.
-    ui.run(cargoStorage, freightStorage, schedule);
+    tui.run(cargoStorage, freightStorage, schedule);
 
     return 0;
 }

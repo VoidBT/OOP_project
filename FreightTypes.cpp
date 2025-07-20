@@ -1,8 +1,7 @@
-#include "FreightTypes.h" // Make sure this matches the .h filename (was FreightType.h in your prev paste)
+#include "FreightTypes.h"
 #include <stdexcept>
-#include <algorithm> // For std::remove
+#include <algorithm>
 
-// Add back 'using namespace std;' here
 using namespace std;
 
 FreightExtended::FreightExtended(const string& id, int t, const string& d, FreightType type)
@@ -33,6 +32,10 @@ bool FreightExtended::removeCargo(const string& cargoId) {
         return true;
     }
     return false;
+}
+
+void FreightExtended::clearAssignedCargos() { // New: Implementation
+    assignedCargos.clear();
 }
 
 const vector<string>& FreightExtended::getAssignedCargos() const {

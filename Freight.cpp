@@ -1,27 +1,12 @@
 #include "Freight.h"
-#include <string>
 
-using namespace std;
-
-Freight::Freight(const string& id, int t, const string& d) : Logistic(id), time(t), dest(d) {}
-
-int Freight::getTime() const {
-    return time;
+Freight::Freight(const std::string& id, int time, const std::string& dest)
+    : id(id), time(time), dest(dest) {
 }
 
-string Freight::getDest() const {
-    return dest;
-}
+std::string Freight::getID() const { return id; }
+int Freight::getTime() const { return time; }
+std::string Freight::getDest() const { return dest; }
 
-void Freight::setTime(int t) {
-    time = t;
-}
-
-void Freight::setDest(const string& d) {
-    dest = d;
-}
-
-void Freight::setTimeAndDest(int t2, const string& d2) {
-    time = t2;
-    dest = d2;
-}
+void Freight::setTime(int newTime) { time = newTime; }
+void Freight::setDest(const std::string& newDest) { dest = newDest; }

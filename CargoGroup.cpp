@@ -1,6 +1,5 @@
 #include "CargoGroup.h"
 #include <algorithm>
-// Add back 'using namespace std;' here
 using namespace std;
 
 CargoGroup::CargoGroup(const string& id, const string& dest, int maxSize, int timeWindow)
@@ -8,6 +7,7 @@ CargoGroup::CargoGroup(const string& id, const string& dest, int maxSize, int ti
 }
 
 bool CargoGroup::addCargo(const Cargo& cargo) {
+    // Ensure cargo destination matches group destination
     if (cargos.size() >= maxSize || cargo.getDest() != destination) {
         return false;
     }
@@ -50,7 +50,7 @@ string CargoGroup::getDestination() const { return destination; }
 int CargoGroup::getSize() const { return cargos.size(); }
 int CargoGroup::getMaxSize() const { return maxSize; }
 int CargoGroup::getTimeWindow() const { return timeWindow; }
-const vector<Cargo>& CargoGroup::getCargos() const { return cargos; }
+const vector<Cargo>& CargoGroup::getCargos() const { return cargos; } // Returns const reference
 
 void CargoGroup::setDestination(const string& newDest) { destination = newDest; }
 void CargoGroup::setTimeWindow(int newWindow) { timeWindow = newWindow; }
