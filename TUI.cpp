@@ -2,7 +2,8 @@
 #include <algorithm>
 #include <limits>
 #include <stdexcept>
-#include <memory>
+#include <memory> // For std::make_shared
+#include <iostream> // For std::cout, std::cin, std::cerr
 
 using namespace std;
 
@@ -52,11 +53,11 @@ void TUI::run(CStorage& cargoStorage, FStorage& freightStorage, ScheduleList& sc
                 showFreightOperationsMenu();
                 freightChoice = getMenuChoice();
                 switch (freightChoice) {
-                case 1: handleAddFreight(freightStorage); break; // Add basic freight to FStorage
+                case 1: handleAddFreight(freightStorage); break; // Add extended freight to FStorage
                 case 2: handleEditFreight(freightStorage); break;
                 case 3: handleDeleteFreight(freightStorage); break;
-                case 4: freightStorage.printAll(); break; // Existing list all basic freights
-                case 5: handleAddFreightExtended(schedule); break; // Add extended freight to ScheduleList
+                case 4: freightStorage.printAll(); break; // Existing list all freights from FStorage
+                case 5: handleAddFreightExtended(schedule); break; // Add extended freight to ScheduleList (redundant in functionality now, consider merging)
                 case 6: handleDisplayExtendedFreights(schedule); break; // NEW: Display Extended Freights
                 case 0: cout << "Returning to main menu.\n"; break;
                 default: cout << "Invalid choice. Please try again.\n"; break;
@@ -118,10 +119,10 @@ void TUI::run(CStorage& cargoStorage, FStorage& freightStorage, ScheduleList& sc
                 case 3: schedule.displayUnderutilizedFreights(); break;
                 case 4: schedule.displayUnassignedCargos(); break;
                 case 5: schedule.printAll(); break;
-                case 6: FilePrinter::printFileWithHeaders(matchesFilename, { "Freight ID", "Cargo ID", "Time", "Destination" }); break;
-                case 7: FilePrinter::printFileWithHeaders(cargoFilename, { "ID", "Time", "Destination" }); break;
-                case 8: FilePrinter::printFileWithHeaders(freightFilename, { "ID", "Time", "Destination" }); break;
-                case 9: FilePrinter::printFileWithHeaders(enhancedScheduleFilename, { "Freight ID", "Type", "Load/Cap", "Destination", "Time", "Assigned Cargos" }); break;
+                case 6: FileManager::printFileWithHeaders(matchesFilename, { "Freight ID", "Cargo ID", "Time", "Destination" }); break; // Using FileManager::printFileWithHeaders
+                case 7: FileManager::printFileWithHeaders(cargoFilename, { "ID", "Time", "Destination", "Size" }); break; // Added Size header
+                case 8: FileManager::printFileWithHeaders(freightFilename, { "ID", "Time", "Destination", "Type" }); break; // Added Type header
+                case 9: FileManager::printFileWithHeaders(enhancedScheduleFilename, { "Freight ID", "Type", "Load/Cap", "Destination", "Time", "Assigned Cargos" }); break;
                 case 0: cout << "Returning to main menu.\n"; break;
                 default: cout << "Invalid choice. Please try again.\n"; break;
                 }
@@ -184,11 +185,11 @@ void TUI::showCargoOperationsMenu() const {
 
 void TUI::showFreightOperationsMenu() const {
     cout << "\n--- Freight Operations ---\n";
-    cout << "1. Add Basic Freight (to storage)\n";
+    cout << "1. Add Freight (to storage, will be extended type)\n"; // Clarified
     cout << "2. Edit Freight\n";
     cout << "3. Delete Freight\n";
     cout << "4. List All Stored Freights\n";
-    cout << "5. Add Extended Freight (to Schedule List for scheduling)\n";
+    cout << "5. Add Extended Freight (to Schedule List for scheduling - same as option 1 now)\n"; // Clarified
     cout << "6. Display All Extended Freights (with Types & Capacity)\n"; // NEW OPTION
     cout << "0. Back to Main Menu\n";
     cout << "Enter your choice: ";
@@ -294,13 +295,19 @@ FreightType TUI::getFreightTypeInput() const {
     }
 }
 
-void TUI::getCargoGroupData(string& groupId, string& dest, int& maxSize) const {
+// Corrected: getCargoGroupData now includes timeWindow parameter
+void TUI::getCargoGroupData(string& groupId, string& dest, int& maxSize, int& timeWindow) const {
     groupId = getInput("Enter Cargo Group ID: ");
     dest = getInput("Enter Destination for Cargo Group: ");
-    maxSize = getIntInput("Enter Max Size for Cargo Group (default 10): ");
+    maxSize = getIntInput("Enter Max Size (number of cargos) for Cargo Group: "); // Clarified
     if (maxSize <= 0) {
         cout << "Max size must be positive. Setting to default (10).\n";
         maxSize = 10;
+    }
+    timeWindow = getIntInput("Enter Time Window for Cargo Group (e.g., 15 for 15 minutes): "); // Added
+    if (timeWindow <= 0) {
+        cout << "Time window must be positive. Setting to default (15).\n";
+        timeWindow = 15;
     }
 }
 
@@ -311,8 +318,8 @@ void TUI::handleAddCargo(CStorage& cargoStorage) const {
     std::string id = getInput("Enter Cargo ID: ");
     int time = getIntInput("Enter Cargo Time (e.g., 900 for 9:00): ");
     std::string dest = getInput("Enter Cargo Destination: ");
-    int size = getIntInput("Enter Cargo Size: "); // NEW: Prompt for size
-    cargoStorage.addCargo(Cargo(id, time, dest, size)); // Pass size to constructor
+    int size = getIntInput("Enter Cargo Size: ");
+    cargoStorage.addCargo(Cargo(id, time, dest, size));
     std::cout << "Cargo added successfully.\n";
 }
 
@@ -330,12 +337,14 @@ void TUI::handleDeleteCargo(CStorage& cargoStorage) const {
     cout << "Cargo deleted successfully (if ID found).\n";
 }
 
+// Fixed: handleAddFreight now creates and adds shared_ptr<FreightExtended>
 void TUI::handleAddFreight(FStorage& freightStorage) const {
     string id = getInput("Enter Freight ID: ");
     int time = getIntInput("Enter Freight Time (e.g., 900 for 9:00): ");
     string dest = getInput("Enter Freight Destination: ");
-    freightStorage.addFreight(Freight(id, time, dest));
-    cout << "Basic Freight added successfully to storage.\n";
+    FreightType type = getFreightTypeInput(); // Prompt for type for FStorage
+    freightStorage.addFreight(make_shared<FreightExtended>(id, time, dest, type)); // Use make_shared
+    cout << "Freight (Extended Type) added successfully to FStorage.\n"; // Clarified message
 }
 
 void TUI::handleEditFreight(FStorage& freightStorage) const {
@@ -376,8 +385,9 @@ void TUI::handleAddCargoGroup(ScheduleList& schedule) const {
     std::string groupId;
     std::string dest;
     int maxSize;
-    getCargoGroupData(groupId, dest, maxSize);
-    CargoGroup newGroup(groupId, dest, maxSize);
+    int timeWindow; // Added
+    getCargoGroupData(groupId, dest, maxSize, timeWindow); // Pass timeWindow
+    CargoGroup newGroup(groupId, dest, maxSize, timeWindow); // Pass timeWindow to constructor
 
     std::cout << "Now, add cargos to this group. Enter 'done' for Cargo ID when finished.\n";
     while (true) {
@@ -387,7 +397,6 @@ void TUI::handleAddCargoGroup(ScheduleList& schedule) const {
         }
         int cargoTime = getIntInput("Enter Cargo Time: ");
         std::string cargoDest = getInput("Enter Cargo Destination: ");
-        // NEW: Get cargo size here!
         int cargoSize = getIntInput("Enter Cargo Size: "); // <--- ADD THIS LINE
 
         if (cargoDest != dest) {
@@ -395,7 +404,6 @@ void TUI::handleAddCargoGroup(ScheduleList& schedule) const {
             continue;
         }
 
-        // NEW: Pass cargoSize to the Cargo constructor
         Cargo tempCargo(cargoId, cargoTime, cargoDest, cargoSize); // <--- MODIFY THIS LINE
         if (newGroup.addCargo(tempCargo)) {
             std::cout << "Cargo " << cargoId << " added to group.\n";

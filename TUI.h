@@ -8,7 +8,7 @@
 #include "FStorage.h"
 #include "ScheduleList.h"
 #include "CargoGroup.h"
-#include "FreightTypes.h" // For FreightExtended and FreightType
+#include "FreightTypes.h" // Corrected: For FreightExtended and FreightType
 #include "FileManager.h"  // For FileManager and FilePrinter
 
 class TUI {
@@ -44,7 +44,8 @@ private:
     std::string getInput(const std::string& prompt) const;
     int getIntInput(const std::string& prompt) const;
     FreightType getFreightTypeInput() const;
-    void getCargoGroupData(std::string& groupId, std::string& dest, int& maxSize) const;
+    // Updated to include timeWindow
+    void getCargoGroupData(std::string& groupId, std::string& dest, int& maxSize, int& timeWindow) const;
 
     // Handler Methods for Operations
     void handleAddCargo(CStorage& cargoStorage) const;
@@ -52,7 +53,7 @@ private:
     void handleDeleteCargo(CStorage& cargoStorage) const;
     void handleDisplayCargos() const; // Renamed from printAll to match new context
 
-    void handleAddFreight(FStorage& freightStorage) const;
+    void handleAddFreight(FStorage& freightStorage) const; // Will now add FreightExtended to FStorage
     void handleEditFreight(FStorage& freightStorage) const;
     void handleDeleteFreight(FStorage& freightStorage) const;
     void handleListAllStoredFreights(FStorage& freightStorage) const; // Renamed for clarity

@@ -1,8 +1,9 @@
 #include "ScheduleList.h"
 #include <algorithm>
 #include <fstream>
-#include <iomanip>
+#include <iomanip> // For std::setw, std::left
 #include <limits>
+#include <iostream> // For std::cout, std::cerr
 
 using namespace std;
 
@@ -233,10 +234,52 @@ void ScheduleList::displayUnderutilizedFreights() const {
     }
 }
 
-// ... (rest of ScheduleList.cpp remains the same for unassigned cargos, saveEnhancedSchedule, matchFreightAndCargo, printAll) ...
-// NOTE: matchFreightAndCargo and printAll's "basic matches" section use basic Freight and Cargo objects from storages,
-// so they won't display the new size information unless you change how Match is structured or how these functions operate.
-// For Enhanced Schedule output, make sure to show currentLoadSize.
+void ScheduleList::displayUnassignedCargos() const {
+    cout << "\n--- Unassigned Cargos ---\n";
+    if (unassignedCargos.empty()) {
+        cout << "All cargos have been assigned.\n";
+    }
+    else {
+        for (const auto& cargoId : unassignedCargos) {
+            cout << "- " << cargoId << "\n";
+        }
+    }
+}
+
+Match ScheduleList::matchFreightAndCargo(FStorage& freightStorage, CStorage& cargoStorage) {
+    // This function implements the basic matching logic as described previously.
+    // It creates a single Match object for demonstration purposes.
+    // In a real scenario, this would likely produce a vector of Match objects.
+
+    // Ensure freights and cargos exist
+    if (freightStorage.getAllFreights().empty() || cargoStorage.getAllCargos().empty()) {
+        cout << "Cannot perform basic matching: No freights or cargos available in storage.\n";
+        // Return a default-constructed Match or throw an error, depending on desired behavior
+        return Match(Freight("", 0, ""), Cargo("", 0, "", 0)); // Return a dummy match
+    }
+
+    shared_ptr<FreightExtended> firstFreightExtended = freightStorage.getAllFreights()[0];
+    Freight firstFreight(firstFreightExtended->getID(), firstFreightExtended->getTime(), firstFreightExtended->getDest());
+    Cargo firstCargo = cargoStorage.getAllCargos()[0]; // CStorage still holds Cargo objects
+
+    // Simple matching criteria: same destination and freight arrival time is on or after cargo
+    if (firstFreight.getDest() == firstCargo.getDest() && firstFreight.getTime() >= firstCargo.getTime()) {
+        Match newMatch(firstFreight, firstCargo);
+        matches.push_back(newMatch); // Store the match
+        cout << "Basic match found and added: Freight " << firstFreight.getID()
+            << " with Cargo " << firstCargo.getID() << "\n";
+        return newMatch;
+    }
+    else {
+        cout << "No basic match found based on simple criteria.\n";
+        return Match(Freight("", 0, ""), Cargo("", 0, "", 0)); // Return a dummy match
+    }
+}
+
+const std::vector<Match>& ScheduleList::getMatches() const {
+    return matches;
+}
+
 
 void ScheduleList::saveEnhancedSchedule(const string& filename) const {
     ofstream file(filename);
@@ -256,11 +299,11 @@ void ScheduleList::saveEnhancedSchedule(const string& filename) const {
 
 
     for (const auto& freight : sortedFreights) {
-        file << setw(10) << left << freight->getID() << " | "
-            << setw(12) << left << FreightExtended::typeToString(freight->getType()) << " | "
-            << setw(15) << left << to_string(freight->getCurrentLoadSize()) + "/" + to_string(freight->getMaxCapacity()) << " | " // Display size load
-            << setw(12) << left << freight->getDest() << " | "
-            << setw(5) << left << freight->getTime() << " | ";
+        file << std::setw(10) << std::left << freight->getID() << " | " // Use std::setw
+            << std::setw(12) << std::left << FreightExtended::typeToString(freight->getType()) << " | " // Use std::setw
+            << std::setw(15) << std::left << to_string(freight->getCurrentLoadSize()) + "/" + to_string(freight->getMaxCapacity()) << " | " // Display size load
+            << std::setw(12) << std::left << freight->getDest() << " | "
+            << std::setw(5) << std::left << freight->getTime() << " | ";
 
         bool firstCargo = true;
         for (const auto& cargoId : freight->getAssignedCargos()) {
@@ -319,5 +362,57 @@ void ScheduleList::printAll() const {
         }
     }
 
-    // ... (rest of printAll remains the same for Cargo Groups, Unassigned Cargos, Basic Matches) ...
+    cout << "\n--- Cargo Groups in Schedule ---\n";
+    if (cargoGroups.empty()) {
+        cout << "No cargo groups added.\n";
+    }
+    else {
+        vector<CargoGroup> sortedGroups = cargoGroups;
+        sort(sortedGroups.begin(), sortedGroups.end(),
+            [](const CargoGroup& a, const CargoGroup& b) {
+                return a.getGroupId() < b.getGroupId();
+            });
+
+        for (const auto& group : sortedGroups) {
+            cout << "Group ID: " << group.getGroupId()
+                << ", Destination: " << group.getDestination()
+                << ", Size: " << group.getSize() << "/" << group.getMaxSize()
+                << ", Time Window: " << group.getTimeWindow() << "\n"; // Added time window
+            cout << "  Cargos in Group: ";
+            if (group.getCargos().empty()) {
+                cout << "None";
+            }
+            else {
+                bool first = true;
+                for (const auto& cargo : group.getCargos()) {
+                    if (!first) cout << ", ";
+                    cout << cargo.getID() << " (Size: " << cargo.getSize() << ")"; // Display cargo size in group
+                    first = false;
+                }
+            }
+            cout << "\n";
+        }
+    }
+
+    cout << "\n--- Unassigned Cargos ---\n";
+    if (unassignedCargos.empty()) {
+        cout << "All cargos have been assigned or grouped.\n";
+    }
+    else {
+        for (const auto& cargoId : unassignedCargos) {
+            cout << "- " << cargoId << "\n";
+        }
+    }
+
+    cout << "\n--- Basic Matches ---\n";
+    if (matches.empty()) {
+        cout << "No basic matches generated.\n";
+    }
+    else {
+        for (const auto& match : matches) {
+            cout << "Freight: " << match.freight.getID() << ", Cargo: " << match.cargo.getID()
+                << ", Time: " << match.freight.getTime() << ", Destination: " << match.freight.getDest() << "\n";
+        }
+    }
+    cout << "===========================\n";
 }

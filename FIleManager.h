@@ -1,34 +1,42 @@
-#pragma once // Include guard
+#pragma once
 #include <string>
 #include <vector>
 #include <fstream>
 #include <iostream>
-#include <sstream>
+#include <memory> // For shared_ptr
 
-// Forward declarations if needed, but direct includes are safer for small projects
-#include "Cargo.h"
-#include "Freight.h"
 #include "CStorage.h"
 #include "FStorage.h"
 #include "Match.h"
-#include "FreightTypes.h" // For FreightExtended, if used for saving enhanced schedule
+#include "FreightTypes.h" // For FreightExtended
 
-// Utility class to print file contents
-class FilePrinter {
-public:
-    static void printFileWithHeaders(const std::string& filename, const std::vector<std::string>& headers);
-};
-
+// Forward declaration to avoid circular dependency if Match was more complex
+// struct Match; // Not strictly needed here as Match is fully defined and included
 
 class FileManager {
 public:
     static void loadCargos(const std::string& filename, CStorage& cargoStorage);
     static void saveCargos(const std::string& filename, const std::vector<Cargo>& cargos);
 
+    // Updated signature for saveFreights to accept shared_ptr<FreightExtended>
     static void loadFreights(const std::string& filename, FStorage& freightStorage);
-    static void saveFreights(const std::string& filename, const std::vector<Freight>& freights);
+    static void saveFreights(const std::string& filename, const std::vector<std::shared_ptr<FreightExtended>>& freights);
 
     static void saveMatches(const std::string& filename, const std::vector<Match>& matches);
-    // You might need a method to load FreightExtended objects into ScheduleList if reading a schedule
-    // And a method to save the final scheduled state (already in ScheduleList::saveEnhancedSchedule)
+};
+
+// FilePrinter class (remains unchanged)
+class FilePrinter {
+public:
+    static void printFile(const std::string& filename);
+    static void printFileFormatted(const std::string& filename,
+        const std::string& delimiter = " | ",
+        int columnWidth = 15);
+    static void printFileWithHeaders(const std::string& filename,
+        const std::vector<std::string>& headers,
+        const std::string& delimiter = " | ",
+        int columnWidth = 15);
+
+private:
+    static std::vector<std::string> splitLine(const std::string& line, char delimiter = ',');
 };

@@ -1,18 +1,18 @@
-#pragma once // Include guard
-#include <vector>
+#pragma once
 #include <string>
-#include "Cargo.h" // Make sure Cargo.h is included
+#include <vector>
+#include "Cargo.h" // Only include Cargo.h
 
 class CargoGroup {
 private:
     std::string groupId;
     std::string destination;
-    int maxSize;
     std::vector<Cargo> cargos;
-    int timeWindow; // in minutes
+    int maxSize;
+    int timeWindow;
 
 public:
-    CargoGroup(const std::string& id, const std::string& dest, int maxSize = 10, int timeWindow = 15);
+    CargoGroup(const std::string& id, const std::string& dest, int maxSize, int timeWindow);
 
     bool addCargo(const Cargo& cargo);
     bool removeCargo(const std::string& cargoId);
@@ -21,13 +21,15 @@ public:
     bool isEmpty() const;
     bool canMergeWith(const CargoGroup& other) const;
 
+    // Getters
     std::string getGroupId() const;
     std::string getDestination() const;
-    int getSize() const;
-    int getMaxSize() const;
+    int getSize() const; // Number of cargos in the group
+    int getMaxSize() const; // Max number of cargos
     int getTimeWindow() const;
     const std::vector<Cargo>& getCargos() const;
 
+    // Setters
     void setDestination(const std::string& newDest);
     void setTimeWindow(int newWindow);
 };

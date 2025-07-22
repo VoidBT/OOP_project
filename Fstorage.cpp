@@ -4,12 +4,12 @@
 
 using namespace std;
 
-void FStorage::addFreight(const Freight& freight) {
+void FStorage::addFreight(shared_ptr<FreightExtended> freight) {
     freights.push_back(freight);
 }
 
 void FStorage::editFreight(const string& id, int newTime, const string& newDest) {
-    Freight* freight = findFreight(id);
+    shared_ptr<FreightExtended> freight = findFreight(id);
     if (freight) {
         freight->setTime(newTime);
         freight->setDest(newDest);
@@ -21,7 +21,7 @@ void FStorage::editFreight(const string& id, int newTime, const string& newDest)
 
 void FStorage::deleteFreight(const string& id) {
     auto it = remove_if(freights.begin(), freights.end(),
-        [&id](const Freight& f) { return f.getID() == id; });
+        [&id](const shared_ptr<FreightExtended>& f) { return f->getID() == id; });
     if (it != freights.end()) {
         freights.erase(it, freights.end());
     }
@@ -30,7 +30,7 @@ void FStorage::deleteFreight(const string& id) {
     }
 }
 
-const vector<Freight>& FStorage::getAllFreights() const {
+const vector<shared_ptr<FreightExtended>>& FStorage::getAllFreights() const {
     return freights;
 }
 
@@ -41,16 +41,18 @@ void FStorage::printAll() const {
         return;
     }
     for (const auto& freight : freights) {
-        cout << "ID: " << freight.getID()
-            << ", Time: " << freight.getTime()
-            << ", Destination: " << freight.getDest() << "\n";
+        cout << "ID: " << freight->getID()
+            << ", Type: " << FreightExtended::typeToString(freight->getType())
+            << ", Time: " << freight->getTime()
+            << ", Destination: " << freight->getDest()
+            << ", Capacity: " << freight->getMaxCapacity() << "\n";
     }
 }
 
-Freight* FStorage::findFreight(const string& id) {
+shared_ptr<FreightExtended> FStorage::findFreight(const string& id) {
     for (auto& freight : freights) {
-        if (freight.getID() == id) {
-            return &freight;
+        if (freight->getID() == id) {
+            return freight;
         }
     }
     return nullptr;
