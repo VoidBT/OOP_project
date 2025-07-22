@@ -4,56 +4,61 @@
 
 using namespace std;
 
-void FileManager::loadCargos(const string& filename, CStorage& cargoStorage) {
-    ifstream file(filename);
+// In FileManager.cpp (only relevant parts shown)
+
+void FileManager::loadCargos(const std::string& filename, CStorage& cargoStorage) {
+    std::ifstream file(filename);
     if (!file.is_open()) {
-        cerr << "Error: Could not open cargo file " << filename << "\n";
+        std::cerr << "Error: Could not open cargo file " << filename << "\n";
         return;
     }
 
     cargoStorage = CStorage(); // Clear existing cargos
-    string line;
-    while (getline(file, line)) {
-        if (line.empty()) continue; // Skip empty lines
-        stringstream ss(line);
-        string id, dest, timeStr, sizeStr;
+    std::string line;
+    while (std::getline(file, line)) {
+        if (line.empty()) continue;
+        std::stringstream ss(line);
+        std::string id, dest, timeStr, sizeStr; // sizeStr is now properly used
         int time, size;
 
-        if (getline(ss, id, ',') &&
-            getline(ss, timeStr, ',') &&
-            getline(ss, dest, ',') &&
-            getline(ss, sizeStr)) { // Read size as well for Cargo.txt format
+        // Ensure all four fields are read
+        if (std::getline(ss, id, ',') &&
+            std::getline(ss, timeStr, ',') &&
+            std::getline(ss, dest, ',') &&
+            std::getline(ss, sizeStr)) {
             try {
-                time = stoi(timeStr);
-                size = stoi(sizeStr); // Read size, though Cargo class doesn't store it internally for now
-                cargoStorage.addCargo(Cargo(id, time, dest));
+                time = std::stoi(timeStr);
+                size = std::stoi(sizeStr); // Parse size
+                // NEW: Pass size to Cargo constructor
+                cargoStorage.addCargo(Cargo(id, time, dest, size));
             }
-            catch (const invalid_argument& e) {
-                cerr << "Skipping malformed cargo line: " << line << " (" << e.what() << ")\n";
+            catch (const std::invalid_argument& e) {
+                std::cerr << "Skipping malformed cargo line: " << line << " (" << e.what() << ")\n";
             }
-            catch (const out_of_range& e) {
-                cerr << "Skipping cargo line with out-of-range number: " << line << " (" << e.what() << ")\n";
+            catch (const std::out_of_range& e) {
+                std::cerr << "Skipping cargo line with out-of-range number: " << line << " (" << e.what() << ")\n";
             }
         }
         else {
-            cerr << "Skipping malformed cargo line: " << line << "\n";
+            std::cerr << "Skipping malformed cargo line (missing fields): " << line << "\n"; // More specific error
         }
     }
     file.close();
-    cout << "Cargos loaded from " << filename << "\n";
+    std::cout << "Cargos loaded from " << filename << "\n";
 }
 
-void FileManager::saveCargos(const string& filename, const vector<Cargo>& cargos) {
-    ofstream file(filename);
+void FileManager::saveCargos(const std::string& filename, const std::vector<Cargo>& cargos) {
+    std::ofstream file(filename);
     if (!file.is_open()) {
-        cerr << "Error: Could not open cargo file " << filename << " for writing\n";
+        std::cerr << "Error: Could not open cargo file " << filename << " for writing\n";
         return;
     }
     for (const auto& cargo : cargos) {
-        file << cargo.getID() << "," << cargo.getTime() << "," << cargo.getDest() << ",1\n"; // Added ',1' to match original format
+        // NEW: Save the size along with other cargo data
+        file << cargo.getID() << "," << cargo.getTime() << "," << cargo.getDest() << "," << cargo.getSize() << "\n";
     }
     file.close();
-    cout << "Cargos saved to " << filename << "\n";
+    std::cout << "Cargos saved to " << filename << "\n";
 }
 
 void FileManager::loadFreights(const string& filename, FStorage& freightStorage) {

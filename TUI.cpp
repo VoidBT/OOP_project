@@ -308,11 +308,12 @@ void TUI::getCargoGroupData(string& groupId, string& dest, int& maxSize) const {
 // --- Handler Methods for Operations ---
 
 void TUI::handleAddCargo(CStorage& cargoStorage) const {
-    string id = getInput("Enter Cargo ID: ");
+    std::string id = getInput("Enter Cargo ID: ");
     int time = getIntInput("Enter Cargo Time (e.g., 900 for 9:00): ");
-    string dest = getInput("Enter Cargo Destination: ");
-    cargoStorage.addCargo(Cargo(id, time, dest));
-    cout << "Cargo added successfully.\n";
+    std::string dest = getInput("Enter Cargo Destination: ");
+    int size = getIntInput("Enter Cargo Size: "); // NEW: Prompt for size
+    cargoStorage.addCargo(Cargo(id, time, dest, size)); // Pass size to constructor
+    std::cout << "Cargo added successfully.\n";
 }
 
 void TUI::handleEditCargo(CStorage& cargoStorage) const {
@@ -372,36 +373,39 @@ void TUI::handleDisplayCargoGroups(ScheduleList& schedule) const {
 
 
 void TUI::handleAddCargoGroup(ScheduleList& schedule) const {
-    string groupId;
-    string dest;
+    std::string groupId;
+    std::string dest;
     int maxSize;
     getCargoGroupData(groupId, dest, maxSize);
     CargoGroup newGroup(groupId, dest, maxSize);
 
-    cout << "Now, add cargos to this group. Enter 'done' for Cargo ID when finished.\n";
+    std::cout << "Now, add cargos to this group. Enter 'done' for Cargo ID when finished.\n";
     while (true) {
-        string cargoId = getInput("Enter Cargo ID to add to group (or 'done'): ");
+        std::string cargoId = getInput("Enter Cargo ID to add to group (or 'done'): ");
         if (cargoId == "done") {
             break;
         }
         int cargoTime = getIntInput("Enter Cargo Time: ");
-        string cargoDest = getInput("Enter Cargo Destination: ");
+        std::string cargoDest = getInput("Enter Cargo Destination: ");
+        // NEW: Get cargo size here!
+        int cargoSize = getIntInput("Enter Cargo Size: "); // <--- ADD THIS LINE
 
         if (cargoDest != dest) {
-            cout << "Warning: Cargo destination does not match group destination. Cargo not added.\n";
+            std::cout << "Warning: Cargo destination does not match group destination. Cargo not added.\n";
             continue;
         }
 
-        Cargo tempCargo(cargoId, cargoTime, cargoDest);
+        // NEW: Pass cargoSize to the Cargo constructor
+        Cargo tempCargo(cargoId, cargoTime, cargoDest, cargoSize); // <--- MODIFY THIS LINE
         if (newGroup.addCargo(tempCargo)) {
-            cout << "Cargo " << cargoId << " added to group.\n";
+            std::cout << "Cargo " << cargoId << " added to group.\n";
         }
         else {
-            cout << "Could not add cargo to group (group might be full or destination mismatch).\n";
+            std::cout << "Could not add cargo to group (group might be full or destination mismatch).\n";
         }
     }
     schedule.addCargoGroup(newGroup);
-    cout << "Cargo Group '" << groupId << "' created and added to schedule list.\n";
+    std::cout << "Cargo Group '" << groupId << "' created and added to schedule list.\n";
 }
 
 void TUI::handleEditCargoGroup() {
