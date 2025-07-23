@@ -1,17 +1,23 @@
 #pragma once // Include guard
 #include <string>
+using namespace std;
 
 class Freight {
 private:
-    std::string id;
+    string id;
     int time;
-    std::string dest;
+    string dest;
+    string type; // NEW: Freight type
 
 public:
-    Freight(const std::string& id, int time, const std::string& dest);
-    std::string getID() const;
+    Freight(const string& id, int time, const string& dest, const string& type);
+
+    string getID() const;
     int getTime() const;
-    std::string getDest() const;
+    string getDest() const;
+    string getType() const; // NEW: Getter for type
+
     void setTime(int newTime);
-    void setDest(const std::string& newDest);
+    void setDest(const string& newDest);
+    void setType(const string& newType); // Optional: Setter for type
 };

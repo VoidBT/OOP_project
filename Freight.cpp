@@ -1,12 +1,14 @@
 #include "Freight.h"
 
-Freight::Freight(const std::string& id, int time, const std::string& dest)
-    : id(id), time(time), dest(dest) {
+Freight::Freight(const string& id, int time, const string& dest, const string& type)
+    : id(id), time(time), dest(dest), type(type) {
 }
 
-std::string Freight::getID() const { return id; }
+string Freight::getID() const { return id; }
 int Freight::getTime() const { return time; }
-std::string Freight::getDest() const { return dest; }
+string Freight::getDest() const { return dest; }
+string Freight::getType() const { return type; } // NEW: Getter for type
 
 void Freight::setTime(int newTime) { time = newTime; }
-void Freight::setDest(const std::string& newDest) { dest = newDest; }
+void Freight::setDest(const string& newDest) { dest = newDest; }
+void Freight::setType(const string& newType) { type = newType; }
