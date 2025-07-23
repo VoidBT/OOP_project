@@ -8,27 +8,25 @@
 #include "CStorage.h"
 #include "Cargo.h"
 #include "Freight.h"
+#include "ScheduleList.h"
 
 using namespace std;
 
+/*
+	Match holds the temporary data for matching freights and cargos.
+	Before finally the data goes to ScheduleList.
+*/
 class Match {
 private:
     vector<shared_ptr<FreightExtended>> freights;
     vector<CargoGroup> cargoGroups;
     vector<string> unassignedCargos;
 
-    struct MatchPair {
-        Freight freight;
-        Cargo cargo;
-        MatchPair(const Freight& f, const Cargo& c) : freight(f), cargo(c) {}
-    };
-
-    vector<MatchPair> matches;
-
-
 public:
     void addFreight(shared_ptr<FreightExtended> freight);
     void addCargoGroup(const CargoGroup& group);
+    const vector<shared_ptr<FreightExtended>> getFreights() const;
+    const vector<CargoGroup>& getCargoGroups() const;
 
     void scheduleByArrivalTime();
     void scheduleByFreightCapacity();
@@ -39,12 +37,9 @@ public:
     void displayUnassignedCargos() const;
 
     void saveEnhancedSchedule(const string& filename) const;
-    void printAll() const;
 
-    MatchPair matchFreightAndCargo(FStorage& fStorage, CStorage& cStorage);
-    vector<string> getMatches();
+    void matchFreightAndCargo(FStorage& fStorage, CStorage& cStorage, ScheduleList& schedule);
 
-    
 private:
     bool canAssignToFreight(const FreightExtended& freight, const Cargo& cargo) const;
     bool assignCargoToBestFreight(const Cargo& cargo);

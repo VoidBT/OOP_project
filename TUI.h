@@ -54,13 +54,13 @@ private:
     void handleAddCargo(CStorage& cargoStorage) const;
     void handleEditCargo(CStorage& cargoStorage) const;
     void handleDeleteCargo(CStorage& cargoStorage) const;
-    void handleDisplayCargos() const;
+    //void handleDisplayCargos() const;
 
     // Freight handlers
     void handleAddFreight(FStorage& freightStorage) const;
     void handleEditFreight(FStorage& freightStorage) const;
     void handleDeleteFreight(FStorage& freightStorage) const;
-    void handleListAllStoredFreights(FStorage& freightStorage) const;
+    //void handleListAllStoredFreights(FStorage& freightStorage) const;
     void handleAddFreightExtended(ScheduleList& schedule) const;
     void handleDisplayExtendedFreights(ScheduleList& schedule) const;
 
@@ -71,7 +71,7 @@ private:
     void handleDeleteCargoGroup();
 
     // File operations
-    void handleLoadAllData(CStorage& cargoStorage, FStorage& freightStorage) const;
+    void handleLoadAllData(CStorage& cargoStorage, FStorage& freightStorage, ScheduleList& schedule) const;
     void handleSaveAllData(CStorage& cargoStorage, FStorage& freightStorage, ScheduleList& schedule) const;
 
     // File path modification

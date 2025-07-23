@@ -1,0 +1,2 @@
+Freight ID | Type         | Load/Cap (Size) | Destination | Time | Assigned Cargos
+----------------------------------------------------------------------------------

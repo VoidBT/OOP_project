@@ -3,18 +3,22 @@
 #include <memory>
 #include "FreightTypes.h"
 #include "CargoGroup.h"
+#include "Match.h"
 
 using namespace std;
 
-class ScheduleList {
+class ScheduleList : public Match {
 private:
-    vector<shared_ptr<FreightExtended>> freights;
-    vector<CargoGroup> cargoGroups;
+    struct ScheduledEntry {
+        Freight freight;
+        Cargo cargo;
+        ScheduledEntry(const Freight& f, const Cargo& c) : freight(f), cargo(c) {}
+    };
+
+    vector<ScheduledEntry> scheduled;
 
 public:
-    void addFreight(shared_ptr<FreightExtended> freight);
-    void addCargoGroup(const CargoGroup& group);
-
-    const vector<shared_ptr<FreightExtended>>& getFreights() const;
-    const vector<CargoGroup>& getCargoGroups() const;
+    void addScheduledEntry(const Freight& freight, const Cargo& cargo);
+    vector<string> getScheduled();
+    void printAll() const;
 };
