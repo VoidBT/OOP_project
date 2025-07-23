@@ -1,64 +1,66 @@
 #include "FileManager.h"
 #include <sstream>
 #include <algorithm> // For std::sort
-#include <iomanip>   // Added for std::setw and std::left
+#include <iomanip>   // For setw, left
+#include <iostream>
 
 using namespace std;
 
-// In FileManager.cpp (only relevant parts shown)
-
-void FileManager::loadCargos(const std::string& filename, CStorage& cargoStorage) {
-    std::ifstream file(filename);
+// Load cargos from file into CStorage
+void FileManager::loadCargos(const string& filename, CStorage& cargoStorage) {
+    ifstream file(filename);
     if (!file.is_open()) {
-        std::cerr << "Error: Could not open cargo file " << filename << "\n";
+        cerr << "Error: Could not open cargo file " << filename << "\n";
         return;
     }
 
     cargoStorage = CStorage(); // Clear existing cargos
-    std::string line;
-    while (std::getline(file, line)) {
+    string line;
+    while (getline(file, line)) {
         if (line.empty()) continue;
-        std::stringstream ss(line);
-        std::string id, dest, timeStr, sizeStr;
+        stringstream ss(line);
+        string id, dest, timeStr, sizeStr;
         int time, size;
 
-        if (std::getline(ss, id, ',') &&
-            std::getline(ss, timeStr, ',') &&
-            std::getline(ss, dest, ',') &&
-            std::getline(ss, sizeStr)) {
+        if (getline(ss, id, ',') &&
+            getline(ss, timeStr, ',') &&
+            getline(ss, dest, ',') &&
+            getline(ss, sizeStr)) {
             try {
-                time = std::stoi(timeStr);
-                size = std::stoi(sizeStr);
+                time = stoi(timeStr);
+                size = stoi(sizeStr);
                 cargoStorage.addCargo(Cargo(id, time, dest, size));
             }
-            catch (const std::invalid_argument& e) {
-                std::cerr << "Skipping malformed cargo line: " << line << " (" << e.what() << ")\n";
+            catch (const invalid_argument& e) {
+                cerr << "Skipping malformed cargo line: " << line << " (" << e.what() << ")\n";
             }
-            catch (const std::out_of_range& e) {
-                std::cerr << "Skipping cargo line with out-of-range number: " << line << " (" << e.what() << ")\n";
+            catch (const out_of_range& e) {
+                cerr << "Skipping cargo line with out-of-range number: " << line << " (" << e.what() << ")\n";
             }
         }
         else {
-            std::cerr << "Skipping malformed cargo line (missing fields): " << line << "\n";
+            cerr << "Skipping malformed cargo line (missing fields): " << line << "\n";
         }
     }
     file.close();
-    std::cout << "Cargos loaded from " << filename << "\n";
+    cout << "Cargos loaded from " << filename << "\n";
 }
 
-void FileManager::saveCargos(const std::string& filename, const std::vector<Cargo>& cargos) {
-    std::ofstream file(filename);
+// Save cargos vector to file
+void FileManager::saveCargos(const string& filename, const vector<Cargo>& cargos) {
+    ofstream file(filename);
     if (!file.is_open()) {
-        std::cerr << "Error: Could not open cargo file " << filename << " for writing\n";
+        cerr << "Error: Could not open cargo file " << filename << " for writing\n";
         return;
     }
     for (const auto& cargo : cargos) {
         file << cargo.getID() << "," << cargo.getTime() << "," << cargo.getDest() << "," << cargo.getSize() << "\n";
     }
     file.close();
-    std::cout << "Cargos saved to " << filename << "\n";
+    cout << "Cargos saved to " << filename << "\n";
 }
 
+// Load freights from file into FStorage
 void FileManager::loadFreights(const string& filename, FStorage& freightStorage) {
     ifstream file(filename);
     if (!file.is_open()) {
@@ -75,7 +77,6 @@ void FileManager::loadFreights(const string& filename, FStorage& freightStorage)
         int time;
         FreightType type;
 
-        // Expect ID, Time, Dest, Type
         if (getline(ss, id, ',') &&
             getline(ss, timeStr, ',') &&
             getline(ss, dest, ',') &&
@@ -92,7 +93,7 @@ void FileManager::loadFreights(const string& filename, FStorage& freightStorage)
             catch (const out_of_range& e) {
                 cerr << "Skipping freight line with out-of-range number: " << line << " (" << e.what() << ")\n";
             }
-            catch (const std::runtime_error& e) { // Catch invalid_argument from stringToType
+            catch (const runtime_error& e) { // For invalid FreightType string
                 cerr << "Skipping freight line with invalid type: " << line << " (" << e.what() << ")\n";
             }
         }
@@ -104,6 +105,7 @@ void FileManager::loadFreights(const string& filename, FStorage& freightStorage)
     cout << "Freights loaded from " << filename << "\n";
 }
 
+// Save freights vector (shared_ptr) to file
 void FileManager::saveFreights(const string& filename, const vector<shared_ptr<FreightExtended>>& freights) {
     ofstream file(filename);
     if (!file.is_open()) {
@@ -118,8 +120,8 @@ void FileManager::saveFreights(const string& filename, const vector<shared_ptr<F
     cout << "Freights saved to " << filename << "\n";
 }
 
-
-void FileManager::saveMatches(const string& filename, const vector<Match>& matches) {
+// Save matches (vector of Match::MatchPair) to file
+void FileManager::saveMatches(const string& filename, const vector<Match::MatchPair>& matches) {
     ofstream file(filename);
     if (!file.is_open()) {
         cerr << "Error: Could not open matches file " << filename << " for writing\n";
