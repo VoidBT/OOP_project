@@ -20,19 +20,3 @@ public:
 
     static void saveMatches(const std::string& filename, const std::vector<Match>& matches);
 };
-
-// FilePrinter class (remains unchanged)
-/*class FilePrinter {
-public:
-    static void printFile(const std::string& filename);
-    static void printFileFormatted(const std::string& filename,
-        const std::string& delimiter = " | ",
-        int columnWidth = 15);
-    static void printFileWithHeaders(const std::string& filename,
-        const std::vector<std::string>& headers,
-        const std::string& delimiter = " | ",
-        int columnWidth = 15);
-
-private:
-    static std::vector<std::string> splitLine(const std::string& line, char delimiter = ',');
-};*/
