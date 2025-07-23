@@ -121,18 +121,14 @@ void FileManager::saveFreights(const string& filename, const vector<shared_ptr<F
 }
 
 // Save matches (vector of Match::MatchPair) to file
-void FileManager::saveMatches(const string& filename, const vector<Match::MatchPair>& matches) {
+void FileManager::saveMatches(const string& filename, vector<string> matches) {
     ofstream file(filename);
     if (!file.is_open()) {
         cerr << "Error: Could not open matches file " << filename << " for writing\n";
         return;
     }
-    for (const auto& match : matches) {
-        file << "Freight ID: " << match.freight.getID()
-            << ", Cargo ID: " << match.cargo.getID()
-            << ", Freight Time: " << match.freight.getTime()
-            << ", Cargo Time: " << match.cargo.getTime()
-            << ", Destination: " << match.freight.getDest() << "\n";
+    for (const auto match : matches) {
+        file << match << "\n";
     }
     file.close();
     cout << "Basic matches saved to " << filename << "\n";

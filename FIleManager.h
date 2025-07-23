@@ -21,5 +21,5 @@ public:
     static void saveFreights(const string& filename, const vector<shared_ptr<FreightExtended>>& freights);
 
     // Updated to save vector of Match::MatchPair, not Match objects
-    static void saveMatches(const string& filename, const vector<Match::MatchPair>& matches);
+    static void saveMatches(const string& filename, vector<string> matches);
 };

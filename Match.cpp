@@ -210,13 +210,15 @@ Match::MatchPair Match::matchFreightAndCargo(FStorage& freightStorage, CStorage&
 vector<string> Match::getMatches() {
     vector<string> matchdata;
     for (auto match : matches) {
-        matchdata.push_back(match.freight.getID());
-        matchdata.push_back(match.cargo.getID());
-        matchdata.push_back(match.freight.getTime());
-        matchdata.push_back(match.cargo.getTime());
-        matchdata.push_back(match.freight.getDest());
+        string data = "Freight ID: " + match.freight.getID() +
+            ", Cargo ID: " + match.cargo.getID() +
+            ", Freight Time: " + to_string(match.freight.getTime()) +
+            ", Cargo Time: " + to_string(match.cargo.getTime()) +
+			", Destination: " + match.freight.getDest();
+
+        matchdata.push_back(data);
     }
-    return;
+    return matchdata;
 }
 
 void Match::saveEnhancedSchedule(const string& filename) const {
