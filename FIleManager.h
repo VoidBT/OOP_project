@@ -22,7 +22,7 @@ public:
 };
 
 // FilePrinter class (remains unchanged)
-class FilePrinter {
+/*class FilePrinter {
 public:
     static void printFile(const std::string& filename);
     static void printFileFormatted(const std::string& filename,
@@ -35,4 +35,4 @@ public:
 
 private:
     static std::vector<std::string> splitLine(const std::string& line, char delimiter = ',');
-};
+};*/

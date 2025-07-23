@@ -330,6 +330,10 @@ void TUI::handleDeleteCargo(CStorage& cargoStorage) const {
     cout << "Cargo deleted successfully (if ID found).\n";
 }
 
+void TUI::handleDisplayCargos() const {
+
+}
+
 // Fixed: handleAddFreight now creates and adds shared_ptr<FreightExtended>
 void TUI::handleAddFreight(FStorage& freightStorage) const {
     string id = getInput("Enter Freight ID: ");
@@ -352,6 +356,10 @@ void TUI::handleDeleteFreight(FStorage& freightStorage) const {
     string id = getInput("Enter ID of Freight to delete: ");
     freightStorage.deleteFreight(id);
     cout << "Freight deleted successfully (if ID found).\n";
+}
+
+void TUI::handleListAllStoredFreights(FStorage& freightStorage) const {
+
 }
 
 void TUI::handleAddFreightExtended(ScheduleList& schedule) const {

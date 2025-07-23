@@ -137,7 +137,7 @@ void FileManager::saveMatches(const string& filename, const vector<Match>& match
 }
 
 // FilePrinter implementation (remains unchanged)
-vector<string> FilePrinter::splitLine(const string& line, char delimiter) {
+/*vector<string> FilePrinter::splitLine(const string& line, char delimiter) {
     vector<string> tokens;
     string token;
     istringstream tokenStream(line);
@@ -213,4 +213,4 @@ void FilePrinter::printFileWithHeaders(const string& filename,
         cout << endl;
     }
     file.close();
-}
+}*/

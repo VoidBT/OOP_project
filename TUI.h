@@ -10,6 +10,7 @@
 #include "CargoGroup.h"
 #include "FreightTypes.h" // Corrected: For FreightExtended and FreightType
 #include "FileManager.h"  // For FileManager and FilePrinter
+#include "FilePrinter.h"
 
 class TUI {
 private:

@@ -32,7 +32,7 @@ public:
 
     void saveEnhancedSchedule(const std::string& filename) const;
 
-    void matchFreightAndCargo(FStorage& fStorage, CStorage& cStorage);
+    Match matchFreightAndCargo(FStorage& fStorage, CStorage& cStorage);
     const std::vector<Match>& getMatches() const;
     void printAll() const;
 
