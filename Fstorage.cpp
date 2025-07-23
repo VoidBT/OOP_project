@@ -1,5 +1,5 @@
 #include "FStorage.h"
-#include <algorithm> // For std::remove_if
+#include <algorithm>
 #include <iostream>
 
 using namespace std;

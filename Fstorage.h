@@ -1,18 +1,20 @@
-#pragma once // Include guard
+#pragma once
 #include <vector>
 #include <string>
-#include <memory> // For std::shared_ptr
-#include "FreightTypes.h" // Include FreightType.h for FreightExtended
+#include <memory>
+#include "FreightTypes.h"
+
+using namespace std;
 
 class FStorage {
 private:
-    std::vector<std::shared_ptr<FreightExtended>> freights; // Store shared_ptr to FreightExtended
+    vector<shared_ptr<FreightExtended>> freights;
 
 public:
-    void addFreight(std::shared_ptr<FreightExtended> freight); // Accepts shared_ptr
-    void editFreight(const std::string& id, int newTime, const std::string& newDest);
-    void deleteFreight(const std::string& id);
-    const std::vector<std::shared_ptr<FreightExtended>>& getAllFreights() const; // Returns shared_ptrs
+    void addFreight(shared_ptr<FreightExtended> freight);
+    void editFreight(const string& id, int newTime, const string& newDest);
+    void deleteFreight(const string& id);
+    const vector<shared_ptr<FreightExtended>>& getAllFreights() const;
     void printAll() const;
-    std::shared_ptr<FreightExtended> findFreight(const std::string& id); // Returns shared_ptr
+    shared_ptr<FreightExtended> findFreight(const string& id);
 };

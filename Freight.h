@@ -1,23 +1,28 @@
-#pragma once // Include guard
+#pragma once
 #include <string>
 using namespace std;
+
+enum class FreightType { MINI_MOVER, CARGO_CRUISER, MEGA_CARRIER };
 
 class Freight {
 private:
     string id;
     int time;
     string dest;
-    string type; // NEW: Freight type
+    FreightType type;
 
 public:
-    Freight(const string& id, int time, const string& dest, const string& type);
+    Freight(const string& id, int time, const string& dest, FreightType type);
 
     string getID() const;
     int getTime() const;
     string getDest() const;
-    string getType() const; // NEW: Getter for type
+    FreightType getType() const;
+    string getTypeString() const;
 
     void setTime(int newTime);
     void setDest(const string& newDest);
-    void setType(const string& newType); // Optional: Setter for type
+    void setType(FreightType newType);
+
+    static string typeToString(FreightType type);
 };

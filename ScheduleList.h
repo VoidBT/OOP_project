@@ -3,13 +3,12 @@
 #include <string>
 #include <iostream>
 #include <memory>
-
 #include "FreightTypes.h"
 #include "CargoGroup.h"
 #include "Match.h"
 #include "FStorage.h"
 #include "CStorage.h"
-#include "Cargo.h" // Ensure Cargo.h is included for Cargo object
+#include "Cargo.h"
 
 class ScheduleList {
 private:
@@ -37,9 +36,8 @@ public:
     void printAll() const;
 
 private:
-    // NEW: canAssignToFreight now takes const Cargo&
     bool canAssignToFreight(const FreightExtended& freight, const Cargo& cargo) const;
-    // NEW: assignCargoToBestFreight now takes const Cargo&
     bool assignCargoToBestFreight(const Cargo& cargo);
+    bool assignGroupToFreights(const CargoGroup& group);
     void resetFreightAssignments();
 };
