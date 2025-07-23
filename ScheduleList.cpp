@@ -250,18 +250,16 @@ Match ScheduleList::matchFreightAndCargo(FStorage& freightStorage, CStorage& car
     // Ensure freights and cargos exist
     if (freightStorage.getAllFreights().empty() || cargoStorage.getAllCargos().empty()) {
         cout << "Cannot perform basic matching: No freights or cargos available in storage.\n";
-        // Return a default-constructed Match or throw an error, depending on desired behavior
-        return Match(Freight("", 0, ""), Cargo("", 0, "", 0)); // Return a dummy match
+        return Match(Freight("", 0, ""), Cargo("", 0, "", 0));
     }
 
     shared_ptr<FreightExtended> firstFreightExtended = freightStorage.getAllFreights()[0];
     Freight firstFreight(firstFreightExtended->getID(), firstFreightExtended->getTime(), firstFreightExtended->getDest());
-    Cargo firstCargo = cargoStorage.getAllCargos()[0]; // CStorage still holds Cargo objects
-
-    // Simple matching criteria: same destination and freight arrival time is on or after cargo
+    Cargo firstCargo = cargoStorage.getAllCargos()[0]; 
+    
     if (firstFreight.getDest() == firstCargo.getDest() && firstFreight.getTime() >= firstCargo.getTime()) {
         Match newMatch(firstFreight, firstCargo);
-        matches.push_back(newMatch); // Store the match
+        matches.push_back(newMatch);
         cout << "Basic match found and added: Freight " << firstFreight.getID()
             << " with Cargo " << firstCargo.getID() << "\n";
         return newMatch;
