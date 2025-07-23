@@ -246,7 +246,7 @@ void ScheduleList::displayUnassignedCargos() const {
     }
 }
 
-Match ScheduleList::matchFreightAndCargo(FStorage& freightStorage, CStorage& cargoStorage) {
+void ScheduleList::matchFreightAndCargo(FStorage& freightStorage, CStorage& cargoStorage) {
     // Ensure freights and cargos exist
     if (freightStorage.getAllFreights().empty() || cargoStorage.getAllCargos().empty()) {
         cout << "Cannot perform basic matching: No freights or cargos available in storage.\n";

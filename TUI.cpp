@@ -113,10 +113,10 @@ void TUI::run(CStorage& cargoStorage, FStorage& freightStorage, ScheduleList& sc
                 case 3: schedule.displayUnderutilizedFreights(); break;
                 case 4: schedule.displayUnassignedCargos(); break;
                 case 5: schedule.printAll(); break;
-                case 6: FileManager::printFileWithHeaders(matchesFilename, { "Freight ID", "Cargo ID", "Time", "Destination" }); break;
-                case 7: FileManager::printFileWithHeaders(cargoFilename, { "ID", "Time", "Destination", "Size" }); break; 
-                case 8: FileManager::printFileWithHeaders(freightFilename, { "ID", "Time", "Destination", "Type" }); break; 
-                case 9: FileManager::printFileWithHeaders(enhancedScheduleFilename, { "Freight ID", "Type", "Load/Cap", "Destination", "Time", "Assigned Cargos" }); break;
+                case 6: FilePrinter::printFileWithHeaders(matchesFilename, { "Freight ID", "Cargo ID", "Time", "Destination" }); break;
+                case 7: FilePrinter::printFileWithHeaders(cargoFilename, { "ID", "Time", "Destination", "Size" }); break; 
+                case 8: FilePrinter::printFileWithHeaders(freightFilename, { "ID", "Time", "Destination", "Type" }); break; 
+                case 9: FilePrinter::printFileWithHeaders(enhancedScheduleFilename, { "Freight ID", "Type", "Load/Cap", "Destination", "Time", "Assigned Cargos" }); break;
                 case 0: cout << "Returning to main menu.\n"; break;
                 default: cout << "Invalid choice. Please try again.\n"; break;
                 }
