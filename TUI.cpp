@@ -2,8 +2,8 @@
 #include <algorithm>
 #include <limits>
 #include <stdexcept>
-#include <memory> // For std::make_shared
-#include <iostream> // For std::cout, std::cin, std::cerr
+#include <memory> 
+#include <iostream> 
 
 using namespace std;
 
@@ -39,8 +39,8 @@ void TUI::run(CStorage& cargoStorage, FStorage& freightStorage, ScheduleList& sc
                 case 1: handleAddCargo(cargoStorage); break;
                 case 2: handleEditCargo(cargoStorage); break;
                 case 3: handleDeleteCargo(cargoStorage); break;
-                case 4: cargoStorage.printAll(); break; // Existing list all cargos
-                case 5: handleDisplayCargoGroups(schedule); break; // NEW: Display Cargo Groups
+                case 4: cargoStorage.printAll(); break; 
+                case 5: handleDisplayCargoGroups(schedule); break; 
                 case 0: cout << "Returning to main menu.\n"; break;
                 default: cout << "Invalid choice. Please try again.\n"; break;
                 }
@@ -53,12 +53,12 @@ void TUI::run(CStorage& cargoStorage, FStorage& freightStorage, ScheduleList& sc
                 showFreightOperationsMenu();
                 freightChoice = getMenuChoice();
                 switch (freightChoice) {
-                case 1: handleAddFreight(freightStorage); break; // Add extended freight to FStorage
+                case 1: handleAddFreight(freightStorage); break;
                 case 2: handleEditFreight(freightStorage); break;
                 case 3: handleDeleteFreight(freightStorage); break;
-                case 4: freightStorage.printAll(); break; // Existing list all freights from FStorage
-                case 5: handleAddFreightExtended(schedule); break; // Add extended freight to ScheduleList (redundant in functionality now, consider merging)
-                case 6: handleDisplayExtendedFreights(schedule); break; // NEW: Display Extended Freights
+                case 4: freightStorage.printAll(); break; 
+                case 5: handleAddFreightExtended(schedule); break; 
+                case 6: handleDisplayExtendedFreights(schedule); break; 
                 case 0: cout << "Returning to main menu.\n"; break;
                 default: cout << "Invalid choice. Please try again.\n"; break;
                 }
@@ -72,8 +72,6 @@ void TUI::run(CStorage& cargoStorage, FStorage& freightStorage, ScheduleList& sc
                 groupChoice = getMenuChoice();
                 switch (groupChoice) {
                 case 1: handleAddCargoGroup(schedule); break;
-                    // case 2: handleDisplayCargoGroups(schedule); break; // Moved to Cargo Operations
-                    // Add more operations here as needed, e.g., display cargo groups
                 case 0: cout << "Returning to main menu.\n"; break;
                 default: cout << "Invalid choice. Please try again.\n"; break;
                 }
@@ -87,18 +85,14 @@ void TUI::run(CStorage& cargoStorage, FStorage& freightStorage, ScheduleList& sc
                 schedulingChoice = getMenuChoice();
                 switch (schedulingChoice) {
                 case 1:
-                    // This is the primary scheduling based on arrival time
                     schedule.scheduleByArrivalTime();
                     cout << "Scheduling by arrival time completed and cargos assigned to freights.\n";
                     break;
                 case 2:
-                    // This is the primary scheduling based on capacity
                     schedule.scheduleByFreightCapacity();
                     cout << "Scheduling by freight capacity completed and cargos assigned to freights.\n";
                     break;
                 case 3:
-                    // This is the *basic* matching for generating the old 'matched_schedule.txt'
-                    // It does NOT assign cargos to freights within the ScheduleList.
                     schedule.matchFreightAndCargo(freightStorage, cargoStorage);
                     cout << "Basic freight and cargo matching completed. (No assignments made to freights for this option)\n";
                     break;
@@ -114,14 +108,14 @@ void TUI::run(CStorage& cargoStorage, FStorage& freightStorage, ScheduleList& sc
                 showDisplayOptionsMenu();
                 displayChoice = getMenuChoice();
                 switch (displayChoice) {
-                case 1: schedule.displayByArrivalTime(); break; // Displays results from scheduleByArrivalTime
-                case 2: schedule.displayByFreightCapacity(); break; // Displays results from scheduleByFreightCapacity
+                case 1: schedule.displayByArrivalTime(); break; 
+                case 2: schedule.displayByFreightCapacity(); break; 
                 case 3: schedule.displayUnderutilizedFreights(); break;
                 case 4: schedule.displayUnassignedCargos(); break;
                 case 5: schedule.printAll(); break;
-                case 6: FileManager::printFileWithHeaders(matchesFilename, { "Freight ID", "Cargo ID", "Time", "Destination" }); break; // Using FileManager::printFileWithHeaders
-                case 7: FileManager::printFileWithHeaders(cargoFilename, { "ID", "Time", "Destination", "Size" }); break; // Added Size header
-                case 8: FileManager::printFileWithHeaders(freightFilename, { "ID", "Time", "Destination", "Type" }); break; // Added Type header
+                case 6: FileManager::printFileWithHeaders(matchesFilename, { "Freight ID", "Cargo ID", "Time", "Destination" }); break;
+                case 7: FileManager::printFileWithHeaders(cargoFilename, { "ID", "Time", "Destination", "Size" }); break; 
+                case 8: FileManager::printFileWithHeaders(freightFilename, { "ID", "Time", "Destination", "Type" }); break; 
                 case 9: FileManager::printFileWithHeaders(enhancedScheduleFilename, { "Freight ID", "Type", "Load/Cap", "Destination", "Time", "Assigned Cargos" }); break;
                 case 0: cout << "Returning to main menu.\n"; break;
                 default: cout << "Invalid choice. Please try again.\n"; break;
@@ -178,19 +172,19 @@ void TUI::showCargoOperationsMenu() const {
     cout << "2. Edit Cargo\n";
     cout << "3. Delete Cargo\n";
     cout << "4. List All Cargos\n";
-    cout << "5. Display All Cargo Groups\n"; // NEW OPTION
+    cout << "5. Display All Cargo Groups\n"; 
     cout << "0. Back to Main Menu\n";
     cout << "Enter your choice: ";
 }
 
 void TUI::showFreightOperationsMenu() const {
     cout << "\n--- Freight Operations ---\n";
-    cout << "1. Add Freight (to storage, will be extended type)\n"; // Clarified
+    cout << "1. Add Freight (to storage, will be extended type)\n"; 
     cout << "2. Edit Freight\n";
     cout << "3. Delete Freight\n";
     cout << "4. List All Stored Freights\n";
-    cout << "5. Add Extended Freight (to Schedule List for scheduling - same as option 1 now)\n"; // Clarified
-    cout << "6. Display All Extended Freights (with Types & Capacity)\n"; // NEW OPTION
+    cout << "5. Add Extended Freight (to Schedule List for scheduling - same as option 1 now)\n"; 
+    cout << "6. Display All Extended Freights (with Types & Capacity)\n"; 
     cout << "0. Back to Main Menu\n";
     cout << "Enter your choice: ";
 }
@@ -198,24 +192,23 @@ void TUI::showFreightOperationsMenu() const {
 void TUI::showCargoGroupOperationsMenu() const {
     cout << "\n--- Cargo Group Operations ---\n";
     cout << "1. Create New Cargo Group\n";
-    // Add more options like 'Add Cargo to Group', 'Remove Cargo from Group', 'Display Group'
     cout << "0. Back to Main Menu\n";
     cout << "Enter your choice: ";
 }
 
 void TUI::showSchedulingOptionsMenu() const {
     cout << "\n--- Scheduling Options ---\n";
-    cout << "1. Run Scheduling by Cargo Arrival Time\n"; // Renamed for clarity
-    cout << "2. Run Scheduling by Freight Capacity Optimization\n"; // Renamed for clarity
-    cout << "3. Run Basic Freight-Cargo Matching (for old report file)\n"; // Clarified purpose
+    cout << "1. Run Scheduling by Cargo Arrival Time\n"; 
+    cout << "2. Run Scheduling by Freight Capacity Optimization\n"; 
+    cout << "3. Run Basic Freight-Cargo Matching (for old report file)\n"; 
     cout << "0. Back to Main Menu\n";
     cout << "Enter your choice: ";
 }
 
 void TUI::showDisplayOptionsMenu() const {
     cout << "\n--- Display Options ---\n";
-    cout << "1. Display Last Scheduling Plan by Freight Arrival Time\n"; // Clarified
-    cout << "2. Display Last Scheduling Plan by Freight Capacity\n"; // Clarified
+    cout << "1. Display Last Scheduling Plan by Freight Arrival Time\n"; 
+    cout << "2. Display Last Scheduling Plan by Freight Capacity\n";
     cout << "3. Display Underutilized Freights\n";
     cout << "4. Display Unassigned Cargos\n";
     cout << "5. Display Full Schedule State (Freights, Groups, Unassigned, Basic Matches)\n";
@@ -299,7 +292,7 @@ FreightType TUI::getFreightTypeInput() const {
 void TUI::getCargoGroupData(string& groupId, string& dest, int& maxSize, int& timeWindow) const {
     groupId = getInput("Enter Cargo Group ID: ");
     dest = getInput("Enter Destination for Cargo Group: ");
-    maxSize = getIntInput("Enter Max Size (number of cargos) for Cargo Group: "); // Clarified
+    maxSize = getIntInput("Enter Max Size (number of cargos) for Cargo Group: ");
     if (maxSize <= 0) {
         cout << "Max size must be positive. Setting to default (10).\n";
         maxSize = 10;

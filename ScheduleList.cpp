@@ -247,10 +247,6 @@ void ScheduleList::displayUnassignedCargos() const {
 }
 
 Match ScheduleList::matchFreightAndCargo(FStorage& freightStorage, CStorage& cargoStorage) {
-    // This function implements the basic matching logic as described previously.
-    // It creates a single Match object for demonstration purposes.
-    // In a real scenario, this would likely produce a vector of Match objects.
-
     // Ensure freights and cargos exist
     if (freightStorage.getAllFreights().empty() || cargoStorage.getAllCargos().empty()) {
         cout << "Cannot perform basic matching: No freights or cargos available in storage.\n";

@@ -10,15 +10,11 @@
 #include "Match.h"
 #include "FreightTypes.h" // For FreightExtended
 
-// Forward declaration to avoid circular dependency if Match was more complex
-// struct Match; // Not strictly needed here as Match is fully defined and included
-
 class FileManager {
 public:
     static void loadCargos(const std::string& filename, CStorage& cargoStorage);
     static void saveCargos(const std::string& filename, const std::vector<Cargo>& cargos);
 
-    // Updated signature for saveFreights to accept shared_ptr<FreightExtended>
     static void loadFreights(const std::string& filename, FStorage& freightStorage);
     static void saveFreights(const std::string& filename, const std::vector<std::shared_ptr<FreightExtended>>& freights);
 
