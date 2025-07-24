@@ -3,7 +3,7 @@
 using namespace std;
 
 CargoGroup::CargoGroup(int id, const string& dest, int timeWindow)
-    : groupId(id), destination(dest), timeWindow(timeWindow) {
+    : groupId(id), destination(dest), timeWindow(timeWindow), GrpSize(0) {
 }
 
 bool CargoGroup::addCargo(const Cargo& cargo) {
@@ -11,6 +11,9 @@ bool CargoGroup::addCargo(const Cargo& cargo) {
     if (cargos.size() >= maxSize || cargo.getDest() != destination) {
         return false;
     }
+
+	GrpSize += cargo.getSize();
+
     cargos.push_back(cargo);
     return true;
 }
@@ -51,6 +54,7 @@ size_t CargoGroup::getSize() const { return cargos.size(); }
 int CargoGroup::getMaxSize() const { return maxSize; }
 Time CargoGroup::getTimeWindow() const { return timeWindow; }
 const vector<Cargo>& CargoGroup::getCargos() const { return cargos; } // Returns const reference
+int CargoGroup::getGrpSize() const { return GrpSize; }
 
 void CargoGroup::setDestination(const string& newDest) { destination = newDest; }
 void CargoGroup::setTimeWindow(int newWindow) { timeWindow = newWindow; }

@@ -33,7 +33,7 @@ bool ScheduleList::canAssignToFreight(const FreightExtended& freight, const Carg
     return freight.canAcceptAnotherCargo() &&
         freight.getDest() == cargo.getDest() &&
         freight.getTime().getRawTime() <= cargo.getTime().getRawTime() &&
-        cargo.getTime().isWithinMinutes(freight.getTime(), 15);
+        cargo.getTime().isWithinLimit(freight.getTime());
 }
 
 bool ScheduleList::assignCargoToBestFreight(const Cargo& cargo) {

@@ -11,6 +11,7 @@ private:
     std::vector<Cargo> cargos;
     int maxSize = 10;
     Time timeWindow;
+    int GrpSize;
 
 public:
     CargoGroup(int id, const std::string& dest, int timeWindow);
@@ -29,6 +30,7 @@ public:
     int getMaxSize() const; // Max number of cargos
     Time getTimeWindow() const;
     const std::vector<Cargo>& getCargos() const;
+    int getGrpSize() const;
 
     // Setters
     void setDestination(const std::string& newDest);

@@ -21,7 +21,7 @@ int Time::getRawTime() const {
 	return hour * 100 + minute;
 }
 
-bool Time::isWithinMinutes(const Time& other, int minutes) const {
+bool Time::isWithinLimit(const Time& other) const {
 	int min_diff = *this - other;
-	return abs(min_diff) <= minutes;
+	return abs(min_diff) <= 15;
 }

@@ -12,5 +12,5 @@ public:
 	
 	int getRawTime() const;
 
-	bool isWithinMinutes(const Time& other, int minutes) const;
+	bool isWithinLimit(const Time& other) const;
 };

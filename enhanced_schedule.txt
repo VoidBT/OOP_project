@@ -1,5 +1,16 @@
+F001       | MegaCarrier  | 2/12            | New York     | 1300  | C001, C001
 F001       | MegaCarrier  | 0/12            | New York     | 1300  | 
 F002       | CargoCruiser | 0/6             | Boston       | 1500  | 
+F002       | CargoCruiser | 0/6             | Boston       | 1500  | 
+F003       | MiniMover    | 2/2             | London       | 730   | C003, C003
 F003       | MiniMover    | 0/2             | London       | 730   | 
+F004       | CargoCruiser | 10/6            | Paris        | 1710  | C004, C004
 F004       | CargoCruiser | 0/6             | Paris        | 1710  | 
-F005       | CargoCruiser | 0/6             | Singapore    | 2000  | 
+F005       | CargoCruiser | 6/6             | Singapore    | 2000  | C005, C006
+F005       | CargoCruiser | 6/6             | Singapore    | 2000  | C005, C006
+
+Unassigned Cargos:
+C002
+C002
+C007
+C007

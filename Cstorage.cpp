@@ -58,7 +58,7 @@ void CStorage::printAllGroups() const {
     for (const auto& group : groups) {
         cout << "Group ID: " << group.getGroupId()
             << ", Destination: " << group.getDestination()
-            << ", Size: " << group.getSize() << "/" << group.getMaxSize()
+            << ", Size: " << group.getGrpSize() << "/" << group.getMaxSize()
             << ", Time Window: " << group.getTimeWindow().getRawTime() << "\n";
         cout << "Cargos in Group:\n";
         for (const auto& cargo : group.getCargos()) {
@@ -80,14 +80,23 @@ Cargo* CStorage::findCargo(const string& id) {
 }
 
 void CStorage::CreateGroups() {
+
+	vector<Cargo> sortedCargos = cargos;
+    sort(sortedCargos.begin(), sortedCargos.end(),
+        [](const Cargo& a, const Cargo& b) {
+            return a.getTime().getRawTime() < b.getTime().getRawTime();
+        });
+
+	groups.clear(); // Clear existing groups before creating new ones
+
 	//Group cargo by destination and time window
 	vector<Cargo> uniqueDestinations;
-    for (auto i : cargos)
+    for (auto i : sortedCargos)
     {
         bool Check = false;
         for (auto u : uniqueDestinations)
         {
-            if (i.getDest() == u.getDest() && abs(i.getTime() - u.getTime()) <= 15)
+            if (i.getDest() == u.getDest() && i.getTime().isWithinLimit(u.getTime()) )
             {
                 Check = true;
                 break;
@@ -110,7 +119,7 @@ void CStorage::CreateGroups() {
             CargoGroup group(groupId++, dest, time);
             for (auto p : cargos)
             {
-                if (i.getDest() == p.getDest() && i.getTime().isWithinMinutes(p.getTime(), 15) ) {
+                if (i.getDest() == p.getDest() && i.getTime().isWithinLimit(p.getTime()) ) {
                     if (!group.addCargo(p) && group.getSize() == group.getMaxSize()) {// If we couldn't add cargo bcs it is full
                         // If group is full, create a new cargoGroup with these params
                         keep_adding = true;
@@ -121,7 +130,7 @@ void CStorage::CreateGroups() {
                 }
             }
             if(!keep_adding) notdone = false;
-            groups.push_back(group);
+                groups.push_back(group);
         }
 
     }
