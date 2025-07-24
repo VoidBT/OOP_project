@@ -16,6 +16,14 @@ using namespace std;
 */
 class Match {
 private:
+    struct MatchPair {
+        Freight freight;
+        Cargo cargo;
+        MatchPair(const Freight& f, const Cargo& c) : freight(f), cargo(c) {}
+    };
+
+    vector<MatchPair> matches;
+
     vector<shared_ptr<FreightExtended>> freights;
     vector<Cargo> cargoGroups;
     vector<string> unassignedCargos;
@@ -36,6 +44,10 @@ public:
 
     void saveEnhancedSchedule(const string& filename) const;
     vector<int> matchFreightAndCargo(FStorage& fStorage, CStorage& cStorage);
+
+    void addScheduledEntry(const Freight& freight, const Cargo& cargo);
+    vector<string> getScheduled();
+    void printAll() const;
 
 private:
     bool canAssignToFreight(const FreightExtended& freight, const Cargo& cargo) const;
