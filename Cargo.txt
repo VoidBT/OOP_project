@@ -2,3 +2,5 @@ C001,1300,New York,1
 C002,1400,Chicago,3
 C003,730,London,1
 C004,1720,Paris,5
+C005,2000,Singapore,4
+C006,2000,Singapore,2

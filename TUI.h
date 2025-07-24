@@ -7,7 +7,6 @@
 #include "CStorage.h"
 #include "FStorage.h"
 #include "ScheduleList.h"
-#include "CargoGroup.h"
 #include "FreightTypes.h"
 #include "FileManager.h"
 #include "FilePrinter.h"

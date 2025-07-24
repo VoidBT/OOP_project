@@ -2,7 +2,6 @@
 #include <vector>
 #include <memory>
 #include "FreightTypes.h"
-#include "CargoGroup.h"
 #include "Match.h"
 
 using namespace std;

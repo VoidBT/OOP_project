@@ -32,12 +32,10 @@ void Match::resetFreightAssignments() {
 bool Match::canAssignToFreight(const FreightExtended& freight, const Cargo& cargo) const {
     return freight.canAcceptAnotherCargo() &&
         freight.getDest() == cargo.getDest() &&
-        freight.getTime() >= cargo.getTime() &&
-        (freight.getTime() - cargo.getTime()) <= 15;
+        freight.getTime() <= cargo.getTime();
 }
 
 bool Match::assignCargoToBestFreight(const Cargo& cargo) {
-    cout << "Trying to assign cargo" << endl;
     sort(freights.begin(), freights.end(),
         [](const auto& a, const auto& b) { return a->getTime() < b->getTime(); });
 
@@ -77,9 +75,6 @@ void Match::scheduleByFreightCapacity() {
 
 void Match::scheduleByArrivalTime() {
     resetFreightAssignments();
-
-    sort(freights.begin(), freights.end(),
-        [](const auto& a, const auto& b) { return a->getTime() < b->getTime(); });
 
     sort(cargoGroups.begin(), cargoGroups.end(),
         [](const Cargo& a, const Cargo& b) { return a.getTime() < b.getTime(); });

@@ -11,15 +11,13 @@ using namespace std;
 class FreightExtended : public Freight {
 private:
     int maxCapacity;       // Max number of cargos
-    int currentLoadSize;   // Total size of cargos
-    int currentLoadCount;  // Total count of cargos
+    int currentLoadSize;  // Total count of cargos
     vector<string> assignedCargos;
 
 public:
     FreightExtended(const string& id, int t, const string& d, FreightType type);
 
     int getMaxCapacity() const;
-    int getCurrentLoadCount() const;
     int getCurrentLoadSize() const;
     bool isFull() const;
 

@@ -65,20 +65,20 @@ void TUI::run(CStorage& cargoStorage, FStorage& freightStorage, ScheduleList& sc
             } while (freightChoice != 0);
             break;
         }
-        case 3: { // Cargo Group Operations
-            int groupChoice;
-            do {
-                showCargoGroupOperationsMenu();
-                groupChoice = getMenuChoice();
-                switch (groupChoice) {
-                case 1: handleAddCargoGroup(schedule); break;
-                case 0: cout << "Returning to main menu.\n"; break;
-                default: cout << "Invalid choice. Please try again.\n"; break;
-                }
-            } while (groupChoice != 0);
-            break;
-        }
-        case 4: { // Scheduling Options
+        //case 3: { // Cargo Group Operations
+        //    int groupChoice;
+        //    do {
+        //        showCargoGroupOperationsMenu();
+        //        groupChoice = getMenuChoice();
+        //        switch (groupChoice) {
+        //        case 1: handleAddCargoGroup(schedule); break;
+        //        case 0: cout << "Returning to main menu.\n"; break;
+        //        default: cout << "Invalid choice. Please try again.\n"; break;
+        //        }
+        //    } while (groupChoice != 0);
+        //    break;
+        //}
+        case 3: { // Scheduling Options
             int schedulingChoice;
             do {
                 showSchedulingOptionsMenu();
@@ -87,11 +87,9 @@ void TUI::run(CStorage& cargoStorage, FStorage& freightStorage, ScheduleList& sc
                 switch (schedulingChoice) {
                 case 1:
                     schedule.scheduleByArrivalTime();
-                    cout << "Scheduling by arrival time completed and cargos assigned to freights.\n";
                     break;
                 case 2:
                     schedule.scheduleByFreightCapacity();
-                    cout << "Scheduling by freight capacity completed and cargos assigned to freights.\n";
                     break;
                 case 3:
                     res = schedule.matchFreightAndCargo(freightStorage, cargoStorage);
@@ -118,7 +116,7 @@ void TUI::run(CStorage& cargoStorage, FStorage& freightStorage, ScheduleList& sc
             } while (schedulingChoice != 0);
             break;
         }
-        case 5: { // Display Options
+        case 4: { // Display Options
             int displayChoice;
             do {
                 showDisplayOptionsMenu();
@@ -139,7 +137,7 @@ void TUI::run(CStorage& cargoStorage, FStorage& freightStorage, ScheduleList& sc
             } while (displayChoice != 0);
             break;
         }
-        case 6: { // File Operations
+        case 5: { // File Operations
             int fileChoice;
             do {
                 showFileOperationsMenu();
@@ -174,10 +172,10 @@ void TUI::showMainMenu() const {
     cout << "\n--- Main Menu ---\n";
     cout << "1. Cargo Operations\n";
     cout << "2. Freight Operations\n";
-    cout << "3. Cargo Group Operations\n";
-    cout << "4. Scheduling Options\n";
-    cout << "5. Display Options\n";
-    cout << "6. File Operations\n";
+    //cout << "3. Cargo Group Operations\n";
+    cout << "3. Scheduling Options\n";
+    cout << "4. Display Options\n";
+    cout << "5. File Operations\n";
     cout << "0. Exit\n";
     cout << "Enter your choice: ";
 }
@@ -392,8 +390,6 @@ void TUI::handleAddCargoGroup(ScheduleList& schedule) const {
     int timeWindow;
     getCargoGroupData(groupId, dest, maxSize, timeWindow);
 
-    //CargoGroup newGroup(groupId, dest, maxSize, timeWindow);
-
     std::cout << "Now, add cargos to this group. Enter 'done' for Cargo ID when finished.\n";
     while (true) {
         std::string cargoId = getInput("Enter Cargo ID to add to group (or 'done'): ");
@@ -413,7 +409,6 @@ void TUI::handleAddCargoGroup(ScheduleList& schedule) const {
         schedule.addCargo(tempCargo);
         std::cout << "Cargo " << cargoId << " added to schedule list.\n";
     }
-    //std::cout << "Cargo Group '" << groupId << "' created and added to schedule list.\n";
 }
 
 void TUI::handleEditCargoGroup() {
