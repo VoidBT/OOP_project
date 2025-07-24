@@ -36,7 +36,6 @@ private:
     void showMainMenu() const;
     void showCargoOperationsMenu() const;
     void showFreightOperationsMenu() const;
-    void showCargoGroupOperationsMenu() const;
     void showSchedulingOptionsMenu() const;
     void showDisplayOptionsMenu() const;
     void showFileOperationsMenu() const;
@@ -64,7 +63,6 @@ private:
     void handleDisplayExtendedFreights(ScheduleList& schedule) const;
 
     // Cargo Group handlers
-    void handleAddCargoGroup(ScheduleList& schedule) const;
     void handleDisplayCargoGroups(ScheduleList& schedule) const;
     void handleEditCargoGroup();
     void handleDeleteCargoGroup();
