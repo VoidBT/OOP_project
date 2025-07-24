@@ -1,6 +1,7 @@
 #include "CStorage.h"
 #include <algorithm> // For std::remove_if
 #include <iostream>
+#include <iomanip>
 
 using namespace std;
 
@@ -42,8 +43,9 @@ void CStorage::printAll() const {
     }
     for (const auto& cargo : cargos) {
         cout << "ID: " << cargo.getID()
-            << ", Time: " << cargo.getTime()
-            << ", Destination: " << cargo.getDest() << "\n";
+            << ", Time: " << setw(4) << setfill('0') << cargo.getTime()
+            << ", Destination: " << cargo.getDest()
+            << ", Size: " << cargo.getSize() << "\n";
     }
 }
 

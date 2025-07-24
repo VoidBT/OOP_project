@@ -162,7 +162,7 @@ void ScheduleList::scheduleByFreightCapacity() {
     }
 
     cout << "Scheduling by freight capacity completed. "
-        << unassignedCargos.size() << " cargos unassigned.\n";
+        << unassignedCargos.size() << " cargoGroups unassigned.\n";
 }
 
 void ScheduleList::scheduleByArrivalTime() {
