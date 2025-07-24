@@ -1,12 +1,13 @@
 #pragma once
 #include <string>
+#include "Time.h"
 
 using namespace std;
 
 class Cargo {
 private:
     string id;
-    int time;
+    Time time;
     string dest;
     int size; // NEW: Add size member
 
@@ -15,7 +16,7 @@ public:
 	// NEW: Update constructor to accept size
     Cargo(const string& id, int time, const string& dest, int size);
     string getID() const;
-    int getTime() const;
+    Time getTime() const;
     string getDest() const;
     int getSize() const; // NEW: Add getter for size
     void setTime(int newTime);

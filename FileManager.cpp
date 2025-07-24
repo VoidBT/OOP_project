@@ -54,7 +54,7 @@ void FileManager::saveCargos(const string& filename, const vector<Cargo>& cargos
         return;
     }
     for (const auto& cargo : cargos) {
-        file << cargo.getID() << "," << cargo.getTime() << "," << cargo.getDest() << "," << cargo.getSize() << "\n";
+        file << cargo.getID() << "," << cargo.getTime().getRawTime() << "," << cargo.getDest() << "," << cargo.getSize() << "\n";
     }
     file.close();
     cout << "Cargos saved to " << filename << "\n";
@@ -113,7 +113,7 @@ void FileManager::saveFreights(const string& filename, const vector<shared_ptr<F
         return;
     }
     for (const auto& freight : freights) {
-        file << freight->getID() << "," << freight->getTime() << "," << freight->getDest() << ","
+        file << freight->getID() << "," << freight->getTime().getRawTime() << "," << freight->getDest() << ","
             << FreightExtended::typeToString(freight->getType()) << "\n";
     }
     file.close();

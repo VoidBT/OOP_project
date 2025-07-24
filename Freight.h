@@ -1,5 +1,7 @@
 #pragma once
 #include <string>
+#include "Time.h"
+
 using namespace std;
 
 enum class FreightType { MINI_MOVER, CARGO_CRUISER, MEGA_CARRIER };
@@ -7,7 +9,7 @@ enum class FreightType { MINI_MOVER, CARGO_CRUISER, MEGA_CARRIER };
 class Freight {
 private:
     string id;
-    int time;
+    Time time;
     string dest;
     FreightType type;
 
@@ -16,7 +18,7 @@ public:
     Freight(const string& id, int time, const string& dest, FreightType type);
 
     string getID() const;
-    int getTime() const;
+    Time getTime() const;
     string getDest() const;
     FreightType getType() const;
     string getTypeString() const;

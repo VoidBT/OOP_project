@@ -49,7 +49,7 @@ int CargoGroup::getGroupId() const { return groupId; }
 string CargoGroup::getDestination() const { return destination; }
 size_t CargoGroup::getSize() const { return cargos.size(); }
 int CargoGroup::getMaxSize() const { return maxSize; }
-int CargoGroup::getTimeWindow() const { return timeWindow; }
+Time CargoGroup::getTimeWindow() const { return timeWindow; }
 const vector<Cargo>& CargoGroup::getCargos() const { return cargos; } // Returns const reference
 
 void CargoGroup::setDestination(const string& newDest) { destination = newDest; }

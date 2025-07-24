@@ -9,7 +9,7 @@ Cargo::Cargo(const string& id, int time, const string& dest, int size)
 } // Initialize size
 
 string Cargo::getID() const { return id; }
-int Cargo::getTime() const { return time; }
+Time Cargo::getTime() const { return time; }
 string Cargo::getDest() const { return dest; }
 int Cargo::getSize() const { return size; } // NEW: Implement getSize
 

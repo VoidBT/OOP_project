@@ -16,12 +16,12 @@ void Match::matchFreightAndCargo(FStorage& freightStorage, CStorage& cargoStorag
 
     shared_ptr<FreightExtended> firstFreightExtended = freightStorage.getAllFreights()[0];
     Freight firstFreight(firstFreightExtended->getID(),
-        firstFreightExtended->getTime(),
+        firstFreightExtended->getTime().getRawTime(),
         firstFreightExtended->getDest(),
         firstFreightExtended->getType());
     Cargo firstCargo = cargoStorage.getAllCargos()[0];
 
-    if (firstFreight.getDest() == firstCargo.getDest() && firstFreight.getTime() >= firstCargo.getTime()) {
+    if (firstFreight.getDest() == firstCargo.getDest() && firstFreight.getTime().getRawTime() >= firstCargo.getTime().getRawTime()) {
         matches.push_back(MatchPair(firstFreight, firstCargo));
         cout << "Basic match found and added: Freight " << firstFreight.getID()
             << " with Cargo " << firstCargo.getID() << "\n";
@@ -41,8 +41,8 @@ vector<string> Match::getMatches() const {
     for (Match::MatchPair match : matches) {
         string data = "Freight ID: " + match.freight.getID() +
             ", Cargo ID: " + match.cargo.getID() +
-            ", Freight Time: " + to_string(match.freight.getTime()) +
-            ", Cargo Time: " + to_string(match.cargo.getTime()) +
+            ", Freight Time: " + to_string(match.freight.getTime().getRawTime()) +
+            ", Cargo Time: " + to_string(match.cargo.getTime().getRawTime()) +
             ", Destination: " + match.freight.getDest();
 
         matchdata.push_back(data);

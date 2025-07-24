@@ -9,7 +9,7 @@ Freight::Freight(const string& id, int time, const string& dest, FreightType typ
 }
 
 string Freight::getID() const { return id; }
-int Freight::getTime() const { return time; }
+Time Freight::getTime() const { return time; }
 string Freight::getDest() const { return dest; }
 FreightType Freight::getType() const { return type; }
 string Freight::getTypeString() const { return typeToString(type); }

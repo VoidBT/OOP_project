@@ -43,7 +43,7 @@ void FStorage::printAll() const {
     for (const auto& freight : freights) {
         cout << "ID: " << freight->getID()
             << ", Type: " << FreightExtended::typeToString(freight->getType())
-            << ", Time: " << freight->getTime()
+            << ", Time: " << freight->getTime().getRawTime()
             << ", Destination: " << freight->getDest()
             << ", Capacity: " << freight->getMaxCapacity() << "\n";
     }

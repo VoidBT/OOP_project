@@ -43,7 +43,7 @@ void CStorage::printAll() const {
     }
     for (const auto& cargo : cargos) {
         cout << "ID: " << cargo.getID()
-            << ", Time: " << setw(4) << setfill('0') << cargo.getTime()
+            << ", Time: " << setw(4) << setfill('0') << cargo.getTime().getRawTime()
             << ", Destination: " << cargo.getDest()
             << ", Size: " << cargo.getSize() << "\n";
     }
@@ -59,11 +59,11 @@ void CStorage::printAllGroups() const {
         cout << "Group ID: " << group.getGroupId()
             << ", Destination: " << group.getDestination()
             << ", Size: " << group.getSize() << "/" << group.getMaxSize()
-            << ", Time Window: " << group.getTimeWindow() << "\n";
+            << ", Time Window: " << group.getTimeWindow().getRawTime() << "\n";
         cout << "Cargos in Group:\n";
         for (const auto& cargo : group.getCargos()) {
             cout << "  - ID: " << cargo.getID()
-                << ", Time: " << setw(4) << setfill('0') << cargo.getTime()
+                << ", Time: " << setw(4) << setfill('0') << cargo.getTime().getRawTime()
                 << ", Destination: " << cargo.getDest()
                 << ", Size: " << cargo.getSize() << "\n";
         }
@@ -104,18 +104,18 @@ void CStorage::CreateGroups() {
     for (auto i : uniqueDestinations)
     {
 		string dest = i.getDest();
-		int time = i.getTime();
+		int time = i.getTime().getRawTime();
         bool notdone = true, keep_adding = false;
         while (notdone) {
             CargoGroup group(groupId++, dest, time);
             for (auto p : cargos)
             {
-                if (i.getDest() == p.getDest() && abs(i.getTime() - p.getTime()) <= 15) {
+                if (i.getDest() == p.getDest() && i.getTime().isWithinMinutes(p.getTime(), 15) ) {
                     if (!group.addCargo(p) && group.getSize() == group.getMaxSize()) {// If we couldn't add cargo bcs it is full
                         // If group is full, create a new cargoGroup with these params
                         keep_adding = true;
 						dest = p.getDest();
-						time = p.getTime();
+						time = p.getTime().getRawTime();
                         break;
                     }
                 }

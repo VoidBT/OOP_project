@@ -32,13 +32,13 @@ void ScheduleList::resetFreightAssignments() {
 bool ScheduleList::canAssignToFreight(const FreightExtended& freight, const Cargo& cargo) const {
     return freight.canAcceptAnotherCargo() &&
         freight.getDest() == cargo.getDest() &&
-        freight.getTime() <= cargo.getTime() &&
-        (cargo.getTime() - freight.getTime()) <= 15;
+        freight.getTime().getRawTime() <= cargo.getTime().getRawTime() &&
+        cargo.getTime().isWithinMinutes(freight.getTime(), 15);
 }
 
 bool ScheduleList::assignCargoToBestFreight(const Cargo& cargo) {
     sort(freights.begin(), freights.end(),
-        [](const auto& a, const auto& b) { return a->getTime() < b->getTime(); });
+        [](const auto& a, const auto& b) { return a->getTime().getRawTime() < b->getTime().getRawTime(); });
 
     for (auto& freight : freights) {
         if (canAssignToFreight(*freight, cargo)) {
@@ -63,14 +63,14 @@ bool ScheduleList::assignGroupToFreights(const Cargo& group) {
 void ScheduleList::displayByArrivalTime() const {
     vector<shared_ptr<FreightExtended>> sortedFreights = freights;
     sort(sortedFreights.begin(), sortedFreights.end(),
-        [](const auto& a, const auto& b) { return a->getTime() < b->getTime(); });
+        [](const auto& a, const auto& b) { return a->getTime().getRawTime() < b->getTime().getRawTime(); });
 
     cout << "\nScheduling Plan Sorted by Freight Arrival Time:\n";
     cout << "===============================================\n";
     for (const auto& freight : sortedFreights) {
         cout << "Freight " << freight->getID()
             << " (" << FreightExtended::typeToString(freight->getType()) << ")"
-            << " - Time: " << freight->getTime()
+            << " - Time: " << freight->getTime().getRawTime()
             << ", Destination: " << freight->getDest()
             << ", Load: " << freight->getCurrentLoadSize() << "/" << freight->getMaxCapacity() << " (size)\n";
 
@@ -103,7 +103,7 @@ void ScheduleList::displayByFreightCapacity() const {
             << " - Capacity: " << freight->getMaxCapacity()
             << ", Current Load: " << freight->getCurrentLoadSize() << " (size)"
             << ", Destination: " << freight->getDest()
-            << ", Time: " << freight->getTime() << "\n";
+            << ", Time: " << freight->getTime().getRawTime() << "\n";
 
         if (!freight->getAssignedCargos().empty()) {
             cout << "  Assigned Cargos (ID): \n";
@@ -129,7 +129,7 @@ void ScheduleList::displayUnderutilizedFreights() const {
                 << ", Max Capacity: " << freight->getMaxCapacity()
                 << " (" << (freight->getMaxCapacity() - freight->getCurrentLoadSize()) << " size units available)"
                 << ", Destination: " << freight->getDest()
-                << ", Time: " << freight->getTime() << "\n";
+                << ", Time: " << freight->getTime().getRawTime() << "\n";
             found = true;
         }
     }
@@ -172,7 +172,7 @@ void ScheduleList::scheduleByArrivalTime() {
     vector<Cargo> sortedGroups = cargoGroups;
     sort(sortedGroups.begin(), sortedGroups.end(),
         [](const Cargo& a, const Cargo& b) {
-            return a.getTime() < b.getTime();
+            return a.getTime().getRawTime() < b.getTime().getRawTime();
         });
 
     for (const auto& cargo : sortedGroups) {
@@ -200,7 +200,7 @@ void ScheduleList::saveEnhancedSchedule(const string& filename) const {
             << setw(12) << left << FreightExtended::typeToString(freight->getType()) << " | "
             << setw(15) << left << to_string(freight->getCurrentLoadSize()) + "/" + to_string(freight->getMaxCapacity()) << " | "
             << setw(12) << left << freight->getDest() << " | "
-            << setw(5) << left << freight->getTime() << " | ";
+            << setw(5) << left << freight->getTime().getRawTime() << " | ";
 
         bool firstCargo = true;
         for (const auto& cargoId : freight->getAssignedCargos()) {
@@ -238,7 +238,7 @@ void ScheduleList::printAll() const {
         for (const auto& freight : sortedFreights) {
             cout << "Freight ID: " << freight->getID()
                 << ", Type: " << FreightExtended::typeToString(freight->getType())
-                << ", Time: " << freight->getTime()
+                << ", Time: " << freight->getTime().getRawTime()
                 << ", Destination: " << freight->getDest()
                 << ", Load: " << freight->getCurrentLoadSize() << "/" << freight->getMaxCapacity() << " (size)\n";
             cout << "  Assigned Cargos: ";
@@ -272,7 +272,7 @@ void ScheduleList::printAll() const {
             cout << "Group ID: " << group.getID()
                 << ", Destination: " << group.getDest()
                 << ", Size: " << group.getSize() << "/" << group.getSize()
-                << ", Time Window: " << group.getTime() << "\n";
+                << ", Time Window: " << group.getTime().getRawTime() << "\n";
             cout << "\n";
         }
     }
