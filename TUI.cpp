@@ -83,6 +83,7 @@ void TUI::run(CStorage& cargoStorage, FStorage& freightStorage, ScheduleList& sc
             do {
                 showSchedulingOptionsMenu();
                 schedulingChoice = getMenuChoice();
+                vector<int> res;
                 switch (schedulingChoice) {
                 case 1:
                     schedule.scheduleByArrivalTime();
@@ -93,7 +94,22 @@ void TUI::run(CStorage& cargoStorage, FStorage& freightStorage, ScheduleList& sc
                     cout << "Scheduling by freight capacity completed and cargos assigned to freights.\n";
                     break;
                 case 3:
-                    schedule.matchFreightAndCargo(freightStorage, cargoStorage);
+                    res = schedule.matchFreightAndCargo(freightStorage, cargoStorage);
+                    for(size_t i = 0; i < res.size(); i+=2) {
+                        if (res[i] == -1 || res[i + 1] == -1) {
+                            cout << "No valid matches found.\n";
+                            break;
+                        }
+                        shared_ptr<FreightExtended> Extended = freightStorage.getAllFreights()[res[i]];
+                        Freight freightMatch(Extended->getID(),
+                            Extended->getTime(),
+                            Extended->getDest(),
+                            Extended->getType());
+                        schedule.addScheduledEntry(
+                            freightMatch,
+                            cargoStorage.getAllCargos()[res[i + 1]]
+                        );
+					}
                     cout << "Basic freight and cargo matching completed. (No assignments made to freights for this option)\n";
                     break;
                 case 0: cout << "Returning to main menu.\n"; break;

@@ -8,7 +8,6 @@
 #include "CStorage.h"
 #include "Cargo.h"
 #include "Freight.h"
-#include "ScheduleList.h"
 
 using namespace std;
 
@@ -38,7 +37,7 @@ public:
 
     void saveEnhancedSchedule(const string& filename) const;
 
-    void matchFreightAndCargo(FStorage& fStorage, CStorage& cStorage, ScheduleList& schedule);
+    vector<int> matchFreightAndCargo(FStorage& fStorage, CStorage& cStorage);
 
 private:
     bool canAssignToFreight(const FreightExtended& freight, const Cargo& cargo) const;

@@ -189,11 +189,14 @@ void Match::displayUnassignedCargos() const {
     }
 }
 
-void Match::matchFreightAndCargo(FStorage& freightStorage, CStorage& cargoStorage, ScheduleList& schedule) {
+// TODO: FIX
+vector<int> Match::matchFreightAndCargo(FStorage& freightStorage, CStorage& cargoStorage) {
+    vector<int> Result;
     if (freightStorage.getAllFreights().empty() || cargoStorage.getAllCargos().empty()) {
         cout << "Cannot perform basic matching: No freights or cargos available in storage.\n";
-        schedule.addScheduledEntry(Freight("", 0, "", FreightType::MINI_MOVER), Cargo("", 0, "", 0));
-        return;
+        Result.push_back(-1);
+        Result.push_back(-1);
+		return Result;
     }
 
     shared_ptr<FreightExtended> firstFreightExtended = freightStorage.getAllFreights()[0];
@@ -204,16 +207,17 @@ void Match::matchFreightAndCargo(FStorage& freightStorage, CStorage& cargoStorag
     Cargo firstCargo = cargoStorage.getAllCargos()[0];
 
     if (firstFreight.getDest() == firstCargo.getDest() && firstFreight.getTime() >= firstCargo.getTime()) {
-        schedule.addScheduledEntry(firstFreight, firstCargo);
+        Result.push_back(0);
+        Result.push_back(0);
         cout << "Basic match found and added: Freight " << firstFreight.getID()
             << " with Cargo " << firstCargo.getID() << "\n";
-        return;
     }
     else {
         cout << "No basic match found based on simple criteria.\n";
-        schedule.addScheduledEntry(Freight("", 0, "", FreightType::MINI_MOVER), Cargo("", 0, "", 0));
-        return;
+        Result.push_back(-1);
+        Result.push_back(-1);
     }
+    return Result;
 }
 
 void Match::saveEnhancedSchedule(const string& filename) const {
