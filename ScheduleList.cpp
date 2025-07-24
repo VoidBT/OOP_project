@@ -59,33 +59,21 @@ void ScheduleList::printAll() const {
     }
 
     cout << "\n--- Cargo Groups in Match ---\n";
-    if (getCargoGroups().empty()) {
+    if (getCargos().empty()) {
         cout << "No cargo groups added.\n";
     }
     else {
-        vector<CargoGroup> sortedGroups = getCargoGroups();
+        vector<Cargo> sortedGroups = getCargos();
         sort(sortedGroups.begin(), sortedGroups.end(),
-            [](const CargoGroup& a, const CargoGroup& b) {
-                return a.getGroupId() < b.getGroupId();
+            [](const Cargo& a, const Cargo& b) {
+                return a.getID() < b.getID();
             });
 
         for (const auto& group : sortedGroups) {
-            cout << "Group ID: " << group.getGroupId()
-                << ", Destination: " << group.getDestination()
-                << ", Size: " << group.getSize() << "/" << group.getMaxSize()
-                << ", Time Window: " << group.getTimeWindow() << "\n";
-            cout << "  Cargos in Group: ";
-            if (group.getCargos().empty()) {
-                cout << "None";
-            }
-            else {
-                bool first = true;
-                for (const auto& cargo : group.getCargos()) {
-                    if (!first) cout << ", ";
-                    cout << cargo.getID() << " (Size: " << cargo.getSize() << ")";
-                    first = false;
-                }
-            }
+            cout << "Group ID: " << group.getID()
+                << ", Destination: " << group.getDest()
+                << ", Size: " << group.getSize() << "/" << group.getSize()
+                << ", Time Window: " << group.getTime() << "\n";
             cout << "\n";
         }
     }

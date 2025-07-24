@@ -10,6 +10,9 @@ FreightExtended::FreightExtended(const string& id, int t, const string& d, Freig
     case FreightType::MINI_MOVER: maxCapacity = 2; break;
     case FreightType::CARGO_CRUISER: maxCapacity = 6; break;
     case FreightType::MEGA_CARRIER: maxCapacity = 12; break;
+    default: maxCapacity = 0;
+		throw invalid_argument("Invalid freight type for FreightExtended");
+        break;
     }
 }
 

@@ -392,7 +392,7 @@ void TUI::handleAddCargoGroup(ScheduleList& schedule) const {
     int timeWindow;
     getCargoGroupData(groupId, dest, maxSize, timeWindow);
 
-    CargoGroup newGroup(groupId, dest, maxSize, timeWindow);
+    //CargoGroup newGroup(groupId, dest, maxSize, timeWindow);
 
     std::cout << "Now, add cargos to this group. Enter 'done' for Cargo ID when finished.\n";
     while (true) {
@@ -410,15 +410,10 @@ void TUI::handleAddCargoGroup(ScheduleList& schedule) const {
         }
 
         Cargo tempCargo(cargoId, cargoTime, cargoDest, cargoSize);
-        if (newGroup.addCargo(tempCargo)) {
-            std::cout << "Cargo " << cargoId << " added to group.\n";
-        }
-        else {
-            std::cout << "Could not add cargo to group (group might be full or destination mismatch).\n";
-        }
+        schedule.addCargo(tempCargo);
+        std::cout << "Cargo " << cargoId << " added to schedule list.\n";
     }
-    schedule.addCargoGroup(newGroup);
-    std::cout << "Cargo Group '" << groupId << "' created and added to schedule list.\n";
+    //std::cout << "Cargo Group '" << groupId << "' created and added to schedule list.\n";
 }
 
 void TUI::handleEditCargoGroup() {
@@ -434,7 +429,7 @@ void TUI::handleLoadAllData(CStorage& cargoStorage, FStorage& freightStorage, Sc
     FileManager::loadFreights(freightFilename, freightStorage);
 
     for(auto i: cargoStorage.getAllCargos()) {
-		schedule.addCargoGroup(CargoGroup(i.getID(), i.getDest(), i.getSize(), i.getTime()));
+		schedule.addCargo(Cargo(i.getID(), i.getTime(), i.getDest(), i.getSize()));
     }
 
     for(auto i: freightStorage.getAllFreights()) {

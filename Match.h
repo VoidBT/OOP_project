@@ -3,7 +3,6 @@
 #include <string>
 #include <memory>
 #include "FreightTypes.h"
-#include "CargoGroup.h"
 #include "FStorage.h"
 #include "CStorage.h"
 #include "Cargo.h"
@@ -18,14 +17,14 @@ using namespace std;
 class Match {
 private:
     vector<shared_ptr<FreightExtended>> freights;
-    vector<CargoGroup> cargoGroups;
+    vector<Cargo> cargoGroups;
     vector<string> unassignedCargos;
 
 public:
     void addFreight(shared_ptr<FreightExtended> freight);
-    void addCargoGroup(const CargoGroup& group);
+    void addCargo(const Cargo& cargo);
     const vector<shared_ptr<FreightExtended>> getFreights() const;
-    const vector<CargoGroup>& getCargoGroups() const;
+    const vector<Cargo>& getCargos() const;
 
     void scheduleByArrivalTime();
     void scheduleByFreightCapacity();
@@ -36,12 +35,11 @@ public:
     void displayUnassignedCargos() const;
 
     void saveEnhancedSchedule(const string& filename) const;
-
     vector<int> matchFreightAndCargo(FStorage& fStorage, CStorage& cStorage);
 
 private:
     bool canAssignToFreight(const FreightExtended& freight, const Cargo& cargo) const;
     bool assignCargoToBestFreight(const Cargo& cargo);
-    bool assignGroupToFreights(const CargoGroup& group);
+    bool assignGroupToFreights(const Cargo& group);
     void resetFreightAssignments();
 };

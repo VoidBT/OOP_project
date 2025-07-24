@@ -9,7 +9,7 @@ private:
     int size; // NEW: Add size member
 
 public:
-    // NEW: Update constructor to accept size
+	// NEW: Update constructor to accept size
     Cargo(const std::string& id, int time, const std::string& dest, int size);
     std::string getID() const;
     int getTime() const;

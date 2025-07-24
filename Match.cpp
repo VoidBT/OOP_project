@@ -10,15 +10,15 @@ void Match::addFreight(shared_ptr<FreightExtended> freight) {
     freights.push_back(freight);
 }
 
-void Match::addCargoGroup(const CargoGroup& group) {
-    cargoGroups.push_back(group);
+void Match::addCargo(const Cargo& cargo) {
+    cargoGroups.push_back(cargo);
 }
 
 const vector<shared_ptr<FreightExtended>> Match::getFreights() const {
     return freights;
 }
 
-const vector<CargoGroup>& Match::getCargoGroups() const {
+const vector<Cargo>& Match::getCargos() const {
     return cargoGroups;
 }
 
@@ -37,6 +37,7 @@ bool Match::canAssignToFreight(const FreightExtended& freight, const Cargo& carg
 }
 
 bool Match::assignCargoToBestFreight(const Cargo& cargo) {
+    cout << "Trying to assign cargo" << endl;
     sort(freights.begin(), freights.end(),
         [](const auto& a, const auto& b) { return a->getTime() < b->getTime(); });
 
@@ -49,16 +50,14 @@ bool Match::assignCargoToBestFreight(const Cargo& cargo) {
     return false;
 }
 
-bool Match::assignGroupToFreights(const CargoGroup& group) {
-    auto cargos = group.getCargos();
+bool Match::assignGroupToFreights(const Cargo& group) {
     bool allAssigned = true;
 
-    for (const auto& cargo : cargos) {
-        if (!assignCargoToBestFreight(cargo)) {
-            unassignedCargos.push_back(cargo.getID());
-            allAssigned = false;
-        }
+    if (!assignCargoToBestFreight(group)) {
+        unassignedCargos.push_back(group.getID());
+        allAssigned = false;
     }
+
     return allAssigned;
 }
 
@@ -82,16 +81,9 @@ void Match::scheduleByArrivalTime() {
     sort(freights.begin(), freights.end(),
         [](const auto& a, const auto& b) { return a->getTime() < b->getTime(); });
 
-    vector<Cargo> allCargosFromGroups;
-    for (const auto& group : cargoGroups) {
-        const auto& groupCargos = group.getCargos();
-        allCargosFromGroups.insert(allCargosFromGroups.end(), groupCargos.begin(), groupCargos.end());
-    }
-
-    sort(allCargosFromGroups.begin(), allCargosFromGroups.end(),
+    sort(cargoGroups.begin(), cargoGroups.end(),
         [](const Cargo& a, const Cargo& b) { return a.getTime() < b.getTime(); });
-
-    for (const auto& cargo : allCargosFromGroups) {
+    for (const auto& cargo : cargoGroups) {
         if (!assignCargoToBestFreight(cargo)) {
             unassignedCargos.push_back(cargo.getID());
         }

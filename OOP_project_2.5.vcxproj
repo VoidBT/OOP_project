@@ -128,7 +128,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Cargo.h" />
-    <ClInclude Include="CargoGroup.h" />
     <ClInclude Include="Cstorage.h" />
     <ClInclude Include="FIleManager.h" />
     <ClInclude Include="FilePrinter.h" />
@@ -142,7 +141,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Cargo.cpp" />
-    <ClCompile Include="CargoGroup.cpp" />
     <ClCompile Include="Cstorage.cpp" />
     <ClCompile Include="FileManager.cpp" />
     <ClCompile Include="FilePrinter.cpp" />
