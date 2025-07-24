@@ -12,6 +12,7 @@ private:
     FreightType type;
 
 public:
+    Freight();
     Freight(const string& id, int time, const string& dest, FreightType type);
 
     string getID() const;

@@ -1,5 +1,9 @@
 #include "Freight.h"
 
+Freight::Freight() : id(), time(0), dest(), type() {
+
+}
+
 Freight::Freight(const string& id, int time, const string& dest, FreightType type)
     : id(id), time(time), dest(dest), type(type) {
 }

@@ -29,7 +29,7 @@ public:
     TUI();
 
     // Main program loop
-    void run(CStorage& cargoStorage, FStorage& freightStorage, ScheduleList& schedule);
+    void run(CStorage& cargoStorage, FStorage& freightStorage, Match& matches, ScheduleList& schedule);
 
 private:
     // Menu display functions
@@ -71,7 +71,7 @@ private:
 
     // File operations
     void handleLoadAllData(CStorage& cargoStorage, FStorage& freightStorage, ScheduleList& schedule) const;
-    void handleSaveAllData(CStorage& cargoStorage, FStorage& freightStorage, ScheduleList& schedule) const;
+    void handleSaveAllData(CStorage& cargoStorage, FStorage& freightStorage, Match& matches, ScheduleList& schedule) const;
 
     // File path modification
     void changeCargoFile();

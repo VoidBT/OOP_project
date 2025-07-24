@@ -127,7 +127,7 @@ void FileManager::saveMatches(const string& filename, vector<string> matches) {
         cerr << "Error: Could not open matches file " << filename << " for writing\n";
         return;
     }
-    for (const auto match : matches) {
+    for (const std::string match : matches) {
         file << match << "\n";
     }
     file.close();

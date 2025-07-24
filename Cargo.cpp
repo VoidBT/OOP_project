@@ -1,5 +1,8 @@
 #include "Cargo.h"
 
+Cargo::Cargo() : id(), time(), dest(), size() {
+
+}
 // NEW: Update constructor implementation
 Cargo::Cargo(const std::string& id, int time, const std::string& dest, int size)
     : id(id), time(time), dest(dest), size(size) {

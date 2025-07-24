@@ -20,7 +20,7 @@ TUI::TUI()
     enhancedScheduleFilename(DEFAULT_ENHANCED_SCHEDULE_FILE) {
 }
 
-void TUI::run(CStorage& cargoStorage, FStorage& freightStorage, ScheduleList& schedule) {
+void TUI::run(CStorage& cargoStorage, FStorage& freightStorage, Match& matches, ScheduleList& schedule) {
     int choice;
 
     handleLoadAllData(cargoStorage, freightStorage, schedule); // Load basic data
@@ -83,7 +83,6 @@ void TUI::run(CStorage& cargoStorage, FStorage& freightStorage, ScheduleList& sc
             do {
                 showSchedulingOptionsMenu();
                 schedulingChoice = getMenuChoice();
-                vector<int> res;
                 switch (schedulingChoice) {
                 case 1:
                     schedule.scheduleByArrivalTime();
@@ -92,22 +91,7 @@ void TUI::run(CStorage& cargoStorage, FStorage& freightStorage, ScheduleList& sc
                     schedule.scheduleByFreightCapacity();
                     break;
                 case 3:
-                    res = schedule.matchFreightAndCargo(freightStorage, cargoStorage);
-                    for(size_t i = 0; i < res.size(); i+=2) {
-                        if (res[i] == -1 || res[i + 1] == -1) {
-                            cout << "No valid matches found.\n";
-                            break;
-                        }
-                        shared_ptr<FreightExtended> Extended = freightStorage.getAllFreights()[res[i]];
-                        Freight freightMatch(Extended->getID(),
-                            Extended->getTime(),
-                            Extended->getDest(),
-                            Extended->getType());
-                        schedule.addScheduledEntry(
-                            freightMatch,
-                            cargoStorage.getAllCargos()[res[i + 1]]
-                        );
-					}
+                    matches.matchFreightAndCargo(freightStorage, cargoStorage);
                     cout << "Basic freight and cargo matching completed. (No assignments made to freights for this option)\n";
                     break;
                 case 0: cout << "Returning to main menu.\n"; break;
@@ -126,7 +110,7 @@ void TUI::run(CStorage& cargoStorage, FStorage& freightStorage, ScheduleList& sc
                 case 2: schedule.displayByFreightCapacity(); break;
                 case 3: schedule.displayUnderutilizedFreights(); break;
                 case 4: schedule.displayUnassignedCargos(); break;
-                case 5: schedule.printAll(); break;
+                case 5: schedule.printAll(); matches.printAll(); break;
                 case 6: FilePrinter::printFileWithHeaders(matchesFilename, { "Freight ID", "Cargo ID", "Freight Time", "Cargo Time", "Destination" }); break;
                 case 7: FilePrinter::printFileWithHeaders(cargoFilename, { "ID", "Time", "Destination", "Size" }); break;
                 case 8: FilePrinter::printFileWithHeaders(freightFilename, { "ID", "Time", "Destination", "Type" }); break;
@@ -144,7 +128,7 @@ void TUI::run(CStorage& cargoStorage, FStorage& freightStorage, ScheduleList& sc
                 fileChoice = getMenuChoice();
                 switch (fileChoice) {
                 case 1: handleLoadAllData(cargoStorage, freightStorage, schedule); break;
-                case 2: handleSaveAllData(cargoStorage, freightStorage, schedule); break;
+                case 2: handleSaveAllData(cargoStorage, freightStorage, matches, schedule); break;
                 case 3: changeCargoFile(); break;
                 case 4: changeFreightFile(); break;
                 case 5: changeMatchesFile(); break;
@@ -405,8 +389,7 @@ void TUI::handleAddCargoGroup(ScheduleList& schedule) const {
             continue;
         }
 
-        Cargo tempCargo(cargoId, cargoTime, cargoDest, cargoSize);
-        schedule.addCargo(tempCargo);
+        schedule.addCargo(Cargo(cargoId, cargoTime, cargoDest, cargoSize));
         std::cout << "Cargo " << cargoId << " added to schedule list.\n";
     }
 }
@@ -423,20 +406,20 @@ void TUI::handleLoadAllData(CStorage& cargoStorage, FStorage& freightStorage, Sc
     FileManager::loadCargos(cargoFilename, cargoStorage);
     FileManager::loadFreights(freightFilename, freightStorage);
 
-    for(auto i: cargoStorage.getAllCargos()) {
-		schedule.addCargo(Cargo(i.getID(), i.getTime(), i.getDest(), i.getSize()));
+    for(Cargo i: cargoStorage.getAllCargos()) {
+		schedule.addCargo(i);
     }
 
-    for(auto i: freightStorage.getAllFreights()) {
-        schedule.addFreight(make_shared<FreightExtended>(i->getID(), i->getTime(), i->getDest(), i->getType()));
+    for(std::shared_ptr<FreightExtended> i: freightStorage.getAllFreights()) {
+        schedule.addFreight(i);
 	}
     cout << "All data loaded.\n";
 }
 
-void TUI::handleSaveAllData(CStorage& cargoStorage, FStorage& freightStorage, ScheduleList& schedule) const {
+void TUI::handleSaveAllData(CStorage& cargoStorage, FStorage& freightStorage, Match& matches, ScheduleList& schedule) const {
     FileManager::saveCargos(cargoFilename, cargoStorage.getAllCargos());
     FileManager::saveFreights(freightFilename, freightStorage.getAllFreights());
-    FileManager::saveMatches(matchesFilename, schedule.getScheduled()); // Now correctly uses vector<string>
+    FileManager::saveMatches(matchesFilename, matches.getMatches()); // Now correctly uses vector<string>
     schedule.saveEnhancedSchedule(enhancedScheduleFilename);
     cout << "All data saved.\n";
 }
