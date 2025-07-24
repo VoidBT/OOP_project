@@ -48,6 +48,9 @@
     <ClInclude Include="FreightTypes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CargoGroup.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Cargo.cpp">
@@ -84,6 +87,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="FreightTypes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CargoGroup.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

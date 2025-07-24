@@ -40,7 +40,7 @@ void TUI::run(CStorage& cargoStorage, FStorage& freightStorage, Match& matches, 
                 case 2: handleEditCargo(cargoStorage); break;
                 case 3: handleDeleteCargo(cargoStorage); break;
                 case 4: cargoStorage.printAll(); break;
-                case 5: handleDisplayCargoGroups(schedule); break;
+                case 5: handleDisplayCargoGroups(cargoStorage); break;
                 case 0: cout << "Returning to main menu.\n"; break;
                 default: cout << "Invalid choice. Please try again.\n"; break;
                 }
@@ -128,6 +128,22 @@ void TUI::run(CStorage& cargoStorage, FStorage& freightStorage, Match& matches, 
             } while (fileChoice != 0);
             break;
         }
+        case 6: { // Cargo Group Operations
+        int groupChoice;
+        do {
+            showCargoGroupOperationsMenu();
+            groupChoice = getMenuChoice();
+            switch (groupChoice) {
+            case 1: handleAddCargoGroup(schedule); break;
+            case 2: handleEditCargoGroup(); break;
+            case 3: handleDeleteCargoGroup(); break;
+            case 4: handleDisplayCargoGroups(cargoStorage); break;
+            case 0: cout << "Returning to main menu.\n"; break;
+            default: cout << "Invalid choice. Please try again.\n"; break;
+            }
+        } while (groupChoice != 0);
+        break;
+		}
         case 0:
             cout << "Exiting program. Goodbye!\n";
             break;
@@ -143,10 +159,10 @@ void TUI::showMainMenu() const {
     cout << "\n--- Main Menu ---\n";
     cout << "1. Cargo Operations\n";
     cout << "2. Freight Operations\n";
-    //cout << "3. Cargo Group Operations\n";
     cout << "3. Scheduling Options\n";
     cout << "4. Display Options\n";
     cout << "5. File Operations\n";
+	cout << "6. Cargo Group Operations\n";
     cout << "0. Exit\n";
     cout << "Enter your choice: ";
 }
@@ -218,6 +234,16 @@ void TUI::showCurrentFiles() const {
     cout << "Freight File: " << freightFilename << "\n";
     cout << "Matches File: " << matchesFilename << "\n";
     cout << "Enhanced Schedule File: " << enhancedScheduleFilename << "\n";
+}
+
+void TUI::showCargoGroupOperationsMenu() const {
+    cout << "\n--- Cargo Group Operations ---\n";
+    cout << "1. Create New Cargo Group\n";
+    cout << "2. Edit Cargo Group\n";
+    cout << "3. Delete Cargo Group\n";
+    cout << "4. Display All Cargo Groups\n";
+    cout << "0. Back to Main Menu\n";
+	cout << "Enter your choice: ";
 }
 
 // --- Input Helper Functions ---
@@ -343,8 +369,35 @@ void TUI::handleDisplayExtendedFreights(ScheduleList& schedule) const {
     schedule.displayByArrivalTime(); // Displays extended freights with types & load info
 }
 
-void TUI::handleDisplayCargoGroups(ScheduleList& schedule) const {
-    schedule.printAll(); // Prints all cargo groups
+void TUI::handleAddCargoGroup(ScheduleList& schedule) const {
+    std::string groupId;
+    std::string dest;
+    int maxSize;
+    int timeWindow;
+    getCargoGroupData(groupId, dest, maxSize, timeWindow);
+
+    std::cout << "Now, add cargos to this group. Enter 'done' for Cargo ID when finished.\n";
+    while (true) {
+        std::string cargoId = getInput("Enter Cargo ID to add to group (or 'done'): ");
+        if (cargoId == "done") {
+            break;
+        }
+        int cargoTime = getIntInput("Enter Cargo Time: ");
+        std::string cargoDest = getInput("Enter Cargo Destination: ");
+        int cargoSize = getIntInput("Enter Cargo Size: ");
+
+        if (cargoDest != dest) {
+            std::cout << "Warning: Cargo destination does not match group destination. Cargo not added.\n";
+            continue;
+        }
+
+        schedule.addCargo(Cargo(cargoId, cargoTime, cargoDest, cargoSize));
+        std::cout << "Cargo " << cargoId << " added to schedule list.\n";
+    }
+}
+
+void TUI::handleDisplayCargoGroups(CStorage& storage) const {
+    storage.printAllGroups(); // Prints all cargo groups
 }
 
 void TUI::handleEditCargoGroup() {
@@ -362,6 +415,8 @@ void TUI::handleLoadAllData(CStorage& cargoStorage, FStorage& freightStorage, Sc
     for(Cargo i: cargoStorage.getAllCargos()) {
 		schedule.addCargo(i);
     }
+
+	cargoStorage.CreateGroups(); // Create cargo groups after loading cargos
 
     for(std::shared_ptr<FreightExtended> i: freightStorage.getAllFreights()) {
         schedule.addFreight(i);

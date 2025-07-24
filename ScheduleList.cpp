@@ -32,7 +32,8 @@ void ScheduleList::resetFreightAssignments() {
 bool ScheduleList::canAssignToFreight(const FreightExtended& freight, const Cargo& cargo) const {
     return freight.canAcceptAnotherCargo() &&
         freight.getDest() == cargo.getDest() &&
-        freight.getTime() <= cargo.getTime();
+        freight.getTime() <= cargo.getTime() &&
+        (cargo.getTime() - freight.getTime()) <= 15;
 }
 
 bool ScheduleList::assignCargoToBestFreight(const Cargo& cargo) {

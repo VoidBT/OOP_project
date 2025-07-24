@@ -49,6 +49,27 @@ void CStorage::printAll() const {
     }
 }
 
+void CStorage::printAllGroups() const {
+    cout << "\n--- All Cargo Groups ---\n";
+    if (groups.empty()) {
+        cout << "No cargo groups available.\n";
+        return;
+    }
+    for (const auto& group : groups) {
+        cout << "Group ID: " << group.getGroupId()
+            << ", Destination: " << group.getDestination()
+            << ", Size: " << group.getSize() << "/" << group.getMaxSize()
+            << ", Time Window: " << group.getTimeWindow() << "\n";
+        cout << "Cargos in Group:\n";
+        for (const auto& cargo : group.getCargos()) {
+            cout << "  - ID: " << cargo.getID()
+                << ", Time: " << setw(4) << setfill('0') << cargo.getTime()
+                << ", Destination: " << cargo.getDest()
+                << ", Size: " << cargo.getSize() << "\n";
+        }
+    }
+}
+
 Cargo* CStorage::findCargo(const string& id) {
     for (auto& cargo : cargos) {
         if (cargo.getID() == id) {
@@ -56,4 +77,56 @@ Cargo* CStorage::findCargo(const string& id) {
         }
     }
     return nullptr;
+}
+
+void CStorage::CreateGroups() {
+	//Group cargo by destination and time window
+	vector<Cargo> uniqueDestinations;
+    for (auto i : cargos)
+    {
+        bool Check = false;
+        for (auto u : uniqueDestinations)
+        {
+            if (i.getDest() == u.getDest() && abs(i.getTime() - u.getTime()) <= 15)
+            {
+                Check = true;
+                break;
+            }
+		}
+        if (!Check)
+        {
+            uniqueDestinations.push_back(i);
+        }
+	}
+
+	int groupId = 0;
+
+    for (auto i : uniqueDestinations)
+    {
+		string dest = i.getDest();
+		int time = i.getTime();
+        bool notdone = true, keep_adding = false;
+        while (notdone) {
+            CargoGroup group(groupId++, dest, time);
+            for (auto p : cargos)
+            {
+                if (i.getDest() == p.getDest() && abs(i.getTime() - p.getTime()) <= 15) {
+                    if (!group.addCargo(p) && group.getSize() == group.getMaxSize()) {// If we couldn't add cargo bcs it is full
+                        // If group is full, create a new cargoGroup with these params
+                        keep_adding = true;
+						dest = p.getDest();
+						time = p.getTime();
+                        break;
+                    }
+                }
+            }
+            if(!keep_adding) notdone = false;
+            groups.push_back(group);
+        }
+
+    }
+}
+
+vector<CargoGroup> CStorage::getCargoGroups() const {
+    return groups;
 }
