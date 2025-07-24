@@ -3,15 +3,17 @@
 #include <string>
 #include "Cargo.h" // Make sure Cargo.h is included
 
+using namespace std;
+
 class CStorage {
 private:
-    std::vector<Cargo> cargos;
+    vector<Cargo> cargos;
 
 public:
     void addCargo(const Cargo& cargo);
-    void editCargo(const std::string& id, int newTime, const std::string& newDest);
-    void deleteCargo(const std::string& id);
-    const std::vector<Cargo>& getAllCargos() const;
+    void editCargo(const string& id, int newTime, const string& newDest);
+    void deleteCargo(const string& id);
+    const vector<Cargo>& getAllCargos() const;
     void printAll() const;
-    Cargo* findCargo(const std::string& id); // Added non-const findCargo for editing
+    Cargo* findCargo(const string& id); // Added non-const findCargo for editing
 };
