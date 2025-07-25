@@ -58,3 +58,8 @@ int CargoGroup::getGrpSize() const { return GrpSize; }
 
 void CargoGroup::setDestination(const string& newDest) { destination = newDest; }
 void CargoGroup::setTimeWindow(int newWindow) { timeWindow = newWindow; }
+
+void CargoGroup::clear() {
+    cargos.clear();
+    GrpSize = 0;
+}

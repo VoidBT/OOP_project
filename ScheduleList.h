@@ -29,6 +29,8 @@ public:
 
     void printAll() const;
 
+    void reset();
+
 private:
     void resetFreightAssignments();
     bool canAssignToFreight(const FreightExtended& freight, const Cargo& cargo) const;

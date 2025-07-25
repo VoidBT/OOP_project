@@ -57,3 +57,12 @@ shared_ptr<FreightExtended> FStorage::findFreight(const string& id) {
     }
     return nullptr;
 }
+
+void FStorage::clear() {
+    for(auto& ptr : freights) {
+		FreightExtended* freightPtr = ptr.get();
+		freightPtr->clearAssignedCargos(); // Clear assigned cargos before resetting
+        ptr.reset(); // Clear shared_ptr
+	}
+    freights.clear();
+}

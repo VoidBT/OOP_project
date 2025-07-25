@@ -14,7 +14,7 @@ void FileManager::loadCargos(const string& filename, CStorage& cargoStorage) {
         return;
     }
 
-    cargoStorage = CStorage(); // Clear existing cargos
+    cargoStorage.clear(); // Clear existing cargos
     string line;
     while (getline(file, line)) {
         if (line.empty()) continue;
@@ -68,7 +68,7 @@ void FileManager::loadFreights(const string& filename, FStorage& freightStorage)
         return;
     }
 
-    freightStorage = FStorage(); // Clear existing freights
+    freightStorage.clear(); // Clear existing freights
     string line;
     while (getline(file, line)) {
         if (line.empty()) continue;

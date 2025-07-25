@@ -21,4 +21,5 @@ public:
     Cargo* findCargo(const string& id); // Added non-const findCargo for editing
 	void CreateGroups(); // NEW: Add cargo group operations
 	vector<CargoGroup> getCargoGroups() const; // NEW: Get all cargo groups
+    void clear();
 };

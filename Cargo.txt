@@ -5,3 +5,4 @@ C004,1720,Paris,5
 C005,2000,Singapore,4
 C006,2000,Singapore,2
 C007,1950,Singapore,3
+C008,715,London,3

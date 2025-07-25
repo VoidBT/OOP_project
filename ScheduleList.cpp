@@ -22,6 +22,15 @@ const vector<Cargo>& ScheduleList::getCargos() const {
     return cargoGroups;
 }
 
+void ScheduleList::reset() {
+    for (auto& freight : freights) {
+        freight->clearAssignedCargos();
+    }
+    freights.clear();
+    cargoGroups.clear();
+    unassignedCargos.clear();
+}
+
 void ScheduleList::resetFreightAssignments() {
     for (auto& freight : freights) {
         freight->clearAssignedCargos();
@@ -223,7 +232,7 @@ void ScheduleList::saveEnhancedSchedule(const string& filename) const {
 }
 
 void ScheduleList::printAll() const {
-    cout << "\nMatch (All Data):\n";
+    cout << "\n(All Data):\n";
     cout << "===========================\n";
 
     cout << "\n--- Freights in ScheduleList ---\n";

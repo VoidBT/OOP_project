@@ -47,6 +47,7 @@ void CStorage::printAll() const {
             << ", Destination: " << cargo.getDest()
             << ", Size: " << cargo.getSize() << "\n";
     }
+	cout << setfill(' '); // Reset fill character after setw
 }
 
 void CStorage::printAllGroups() const {
@@ -68,6 +69,7 @@ void CStorage::printAllGroups() const {
                 << ", Size: " << cargo.getSize() << "\n";
         }
     }
+    cout << setfill(' '); // Reset fill character after setw
 }
 
 Cargo* CStorage::findCargo(const string& id) {
@@ -138,4 +140,12 @@ void CStorage::CreateGroups() {
 
 vector<CargoGroup> CStorage::getCargoGroups() const {
     return groups;
+}
+
+void CStorage::clear() {
+    for (auto& cargo : groups) {
+        cargo.clear();
+	}
+    cargos.clear();
+    groups.clear();
 }

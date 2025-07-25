@@ -35,4 +35,6 @@ public:
     // Setters
     void setDestination(const std::string& newDest);
     void setTimeWindow(int newWindow);
+
+    void clear();
 };

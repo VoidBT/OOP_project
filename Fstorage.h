@@ -17,4 +17,5 @@ public:
     const vector<shared_ptr<FreightExtended>>& getAllFreights() const;
     void printAll() const;
     shared_ptr<FreightExtended> findFreight(const string& id);
+    void clear();
 };

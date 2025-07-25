@@ -40,7 +40,7 @@ private:
     void showDisplayOptionsMenu() const;
     void showFileOperationsMenu() const;
     void showCurrentFiles() const;
-	void showCargoGroupOperationsMenu() const;
+	//void showCargoGroupOperationsMenu() const;
 
     // Input helper functions
     int getMenuChoice() const;
@@ -64,10 +64,10 @@ private:
     void handleDisplayExtendedFreights(ScheduleList& schedule) const;
 
     // Cargo Group handlers
-    void handleAddCargoGroup(ScheduleList& schedule) const;
+    //void handleAddCargoGroup(ScheduleList& schedule) const;
     void handleDisplayCargoGroups(CStorage& storage) const;
-    void handleEditCargoGroup();
-    void handleDeleteCargoGroup();
+    //void handleEditCargoGroup();
+    //void handleDeleteCargoGroup();
 
     // File operations
     void handleLoadAllData(CStorage& cargoStorage, FStorage& freightStorage, ScheduleList& schedule) const;
