@@ -11,10 +11,13 @@
 #include "FileManager.h"
 #include "FilePrinter.h"
 
+//Done by Brendan Tjung Yew Wang 2401765
+
 using namespace std;
 
 class TUI {
 private:
+	// File names for data storage
     string cargoFilename;
     string freightFilename;
     string matchesFilename;

@@ -5,9 +5,10 @@
 #include <memory> 
 #include <iostream> 
 
+//Done by Brendan Tjung Yew Wang 2401765
+
 using namespace std;
 
-// Define the static const members here
 const string TUI::DEFAULT_CARGO_FILE = "cargo.txt";
 const string TUI::DEFAULT_FREIGHT_FILE = "freight.txt";
 const string TUI::DEFAULT_MATCHES_FILE = "matched_schedule.txt";
@@ -33,6 +34,7 @@ void TUI::run(CStorage& cargoStorage, FStorage& freightStorage, Match& matches, 
         case 1: {
             int cargoChoice;
             do {
+				//Menu for Cargo Operations
                 showCargoOperationsMenu();
                 cargoChoice = getMenuChoice();
                 switch (cargoChoice) {
@@ -50,6 +52,7 @@ void TUI::run(CStorage& cargoStorage, FStorage& freightStorage, Match& matches, 
         case 2: {
             int freightChoice;
             do {
+				//Menu for Freight Operations
                 showFreightOperationsMenu();
                 freightChoice = getMenuChoice();
                 switch (freightChoice) {
@@ -65,9 +68,10 @@ void TUI::run(CStorage& cargoStorage, FStorage& freightStorage, Match& matches, 
             } while (freightChoice != 0);
             break;
         }
-        case 3: { // Scheduling Options
+        case 3: {
             int schedulingChoice;
             do {
+				//Menu for Scheduling Options
                 showSchedulingOptionsMenu();
                 schedulingChoice = getMenuChoice();
                 switch (schedulingChoice) {
@@ -87,9 +91,10 @@ void TUI::run(CStorage& cargoStorage, FStorage& freightStorage, Match& matches, 
             } while (schedulingChoice != 0);
             break;
         }
-        case 4: { // Display Options
+        case 4: {
             int displayChoice;
             do {
+				//Menu for Display Options
                 showDisplayOptionsMenu();
                 displayChoice = getMenuChoice();
                 switch (displayChoice) {
@@ -108,9 +113,10 @@ void TUI::run(CStorage& cargoStorage, FStorage& freightStorage, Match& matches, 
             } while (displayChoice != 0);
             break;
         }
-        case 5: { // File Operations
+        case 5: {
             int fileChoice;
             do {
+				//Menu for File Operations
                 showFileOperationsMenu();
                 fileChoice = getMenuChoice();
                 switch (fileChoice) {
@@ -128,22 +134,6 @@ void TUI::run(CStorage& cargoStorage, FStorage& freightStorage, Match& matches, 
             } while (fileChoice != 0);
             break;
         }
-  //      case 6: { // Cargo Group Operations
-  //      int groupChoice;
-  //      do {
-  //          showCargoGroupOperationsMenu();
-  //          groupChoice = getMenuChoice();
-  //          switch (groupChoice) {
-  //          case 1: handleAddCargoGroup(schedule); break;
-  //          case 2: handleEditCargoGroup(); break;
-  //          case 3: handleDeleteCargoGroup(); break;
-  //          case 4: handleDisplayCargoGroups(cargoStorage); break;
-  //          case 0: cout << "Returning to main menu.\n"; break;
-  //          default: cout << "Invalid choice. Please try again.\n"; break;
-  //          }
-  //      } while (groupChoice != 0);
-  //      break;
-		//}
         case 0:
             cout << "Exiting program. Goodbye!\n";
             break;
@@ -162,11 +152,11 @@ void TUI::showMainMenu() const {
     cout << "3. Scheduling Options\n";
     cout << "4. Display Options\n";
     cout << "5. File Operations\n";
-	//cout << "6. Cargo Group Operations\n";
     cout << "0. Exit\n";
     cout << "Enter your choice: ";
 }
 
+//Cargo Operations Menu
 void TUI::showCargoOperationsMenu() const {
     cout << "\n--- Cargo Operations ---\n";
     cout << "1. Add Cargo\n";
@@ -178,6 +168,7 @@ void TUI::showCargoOperationsMenu() const {
     cout << "Enter your choice: ";
 }
 
+//Freight Operations Menu
 void TUI::showFreightOperationsMenu() const {
     cout << "\n--- Freight Operations ---\n";
     cout << "1. Add Freight (to storage, will be extended type)\n";
@@ -190,6 +181,7 @@ void TUI::showFreightOperationsMenu() const {
     cout << "Enter your choice: ";
 }
 
+//Scheduling Options Menu
 void TUI::showSchedulingOptionsMenu() const {
     cout << "\n--- Scheduling Options ---\n";
     cout << "1. Run Scheduling by Cargo Arrival Time\n";
@@ -199,6 +191,7 @@ void TUI::showSchedulingOptionsMenu() const {
     cout << "Enter your choice: ";
 }
 
+//Display Options Menu
 void TUI::showDisplayOptionsMenu() const {
     cout << "\n--- Display Options ---\n";
     cout << "1. Display Last Scheduling Plan by Freight Arrival Time\n";
@@ -214,6 +207,7 @@ void TUI::showDisplayOptionsMenu() const {
     cout << "Enter your choice: ";
 }
 
+//File Operations Menu
 void TUI::showFileOperationsMenu() const {
     cout << "\n--- File Operations ---\n";
     cout << "1. Load All Data (Cargos, Freights)\n";
@@ -228,6 +222,7 @@ void TUI::showFileOperationsMenu() const {
     cout << "Enter your choice: ";
 }
 
+//Current File Paths Display
 void TUI::showCurrentFiles() const {
     cout << "\nCurrent File Paths:\n";
     cout << "Cargo File: " << cargoFilename << "\n";
@@ -235,16 +230,6 @@ void TUI::showCurrentFiles() const {
     cout << "Matches File: " << matchesFilename << "\n";
     cout << "Enhanced Schedule File: " << enhancedScheduleFilename << "\n";
 }
-
-//void TUI::showCargoGroupOperationsMenu() const {
-//    cout << "\n--- Cargo Group Operations ---\n";
-//    cout << "1. Create New Cargo Group\n";
-//    cout << "2. Edit Cargo Group\n";
-//    cout << "3. Delete Cargo Group\n";
-//    cout << "4. Display All Cargo Groups\n";
-//    cout << "0. Back to Main Menu\n";
-//	cout << "Enter your choice: ";
-//}
 
 // --- Input Helper Functions ---
 int TUI::getMenuChoice() const {
@@ -255,6 +240,7 @@ int TUI::getMenuChoice() const {
     return choice;
 }
 
+//Input helper functions for string and integer inputs
 string TUI::getInput(const string& prompt) const {
     string input;
     cout << prompt;
@@ -262,6 +248,7 @@ string TUI::getInput(const string& prompt) const {
     return input;
 }
 
+//Input helper function for integer inputs with validation
 int TUI::getIntInput(const string& prompt) const {
     int value;
     while (true) {
@@ -279,6 +266,7 @@ int TUI::getIntInput(const string& prompt) const {
     }
 }
 
+//Input helper function for FreightType with validation
 FreightType TUI::getFreightTypeInput() const {
     while (true) {
         cout << "Enter Freight Type (MiniMover, CargoCruiser, MegaCarrier): ";
@@ -319,6 +307,7 @@ void TUI::handleAddCargo(CStorage& cargoStorage) const {
     std::cout << "Cargo added successfully.\n";
 }
 
+// Handle editing a cargo by ID
 void TUI::handleEditCargo(CStorage& cargoStorage) const {
     string id = getInput("Enter ID of Cargo to edit: ");
     int newTime = getIntInput("Enter new Time: ");
@@ -327,12 +316,14 @@ void TUI::handleEditCargo(CStorage& cargoStorage) const {
     cout << "Cargo edited successfully (if ID found).\n";
 }
 
+// Handle deleting a cargo by ID
 void TUI::handleDeleteCargo(CStorage& cargoStorage) const {
     string id = getInput("Enter ID of Cargo to delete: ");
     cargoStorage.deleteCargo(id);
     cout << "Cargo deleted successfully (if ID found).\n";
 }
 
+// Handle adding a freight to the freight storage
 void TUI::handleAddFreight(FStorage& freightStorage) const {
     string id = getInput("Enter Freight ID: ");
     int time = getIntInput("Enter Freight Time (e.g., 900 for 9:00): ");
@@ -342,6 +333,7 @@ void TUI::handleAddFreight(FStorage& freightStorage) const {
     cout << "Freight (Extended Type) added successfully to FStorage.\n";
 }
 
+// Handle editing a freight by ID
 void TUI::handleEditFreight(FStorage& freightStorage) const {
     string id = getInput("Enter ID of Freight to edit: ");
     int newTime = getIntInput("Enter new Time: ");
@@ -350,12 +342,14 @@ void TUI::handleEditFreight(FStorage& freightStorage) const {
     cout << "Freight edited successfully (if ID found).\n";
 }
 
+// Handle deleting a freight by ID
 void TUI::handleDeleteFreight(FStorage& freightStorage) const {
     string id = getInput("Enter ID of Freight to delete: ");
     freightStorage.deleteFreight(id);
     cout << "Freight deleted successfully (if ID found).\n";
 }
 
+// Handle adding an extended freight to the schedule list
 void TUI::handleAddFreightExtended(ScheduleList& schedule) const {
     string id = getInput("Enter Freight ID: ");
     int time = getIntInput("Enter Freight Time (e.g., 900 for 9:00): ");
@@ -365,49 +359,17 @@ void TUI::handleAddFreightExtended(ScheduleList& schedule) const {
     cout << "Extended Freight added to schedule list successfully.\n";
 }
 
+// Handle displaying extended freights with types and load info
 void TUI::handleDisplayExtendedFreights(ScheduleList& schedule) const {
     schedule.displayByArrivalTime(); // Displays extended freights with types & load info
 }
 
-//void TUI::handleAddCargoGroup(ScheduleList& schedule) const {
-//    std::string groupId;
-//    std::string dest;
-//    int maxSize;
-//    int timeWindow;
-//    getCargoGroupData(groupId, dest, maxSize, timeWindow);
-//
-//    std::cout << "Now, add cargos to this group. Enter 'done' for Cargo ID when finished.\n";
-//    while (true) {
-//        std::string cargoId = getInput("Enter Cargo ID to add to group (or 'done'): ");
-//        if (cargoId == "done") {
-//            break;
-//        }
-//        int cargoTime = getIntInput("Enter Cargo Time: ");
-//        std::string cargoDest = getInput("Enter Cargo Destination: ");
-//        int cargoSize = getIntInput("Enter Cargo Size: ");
-//
-//        if (cargoDest != dest) {
-//            std::cout << "Warning: Cargo destination does not match group destination. Cargo not added.\n";
-//            continue;
-//        }
-//
-//        schedule.addCargo(Cargo(cargoId, cargoTime, cargoDest, cargoSize));
-//        std::cout << "Cargo " << cargoId << " added to schedule list.\n";
-//    }
-//}
-//
+// Handle displaying cargo groups
 void TUI::handleDisplayCargoGroups(CStorage& storage) const {
     storage.printAllGroups(); // Prints all cargo groups
 }
-//
-//void TUI::handleEditCargoGroup() {
-//    cout << "Cargo Group editing functionality not yet implemented.\n";
-//}
-//
-//void TUI::handleDeleteCargoGroup() {
-//    cout << "Cargo Group deletion functionality not yet implemented.\n";
-//}
 
+// Load all data from files into storage and schedule
 void TUI::handleLoadAllData(CStorage& cargoStorage, FStorage& freightStorage, ScheduleList& schedule) const {
     schedule.reset();
 
@@ -426,6 +388,7 @@ void TUI::handleLoadAllData(CStorage& cargoStorage, FStorage& freightStorage, Sc
     cout << "All data loaded.\n";
 }
 
+// Save all data to files
 void TUI::handleSaveAllData(CStorage& cargoStorage, FStorage& freightStorage, Match& matches, ScheduleList& schedule) const {
     FileManager::saveCargos(cargoFilename, cargoStorage.getAllCargos());
     FileManager::saveFreights(freightFilename, freightStorage.getAllFreights());
@@ -434,30 +397,35 @@ void TUI::handleSaveAllData(CStorage& cargoStorage, FStorage& freightStorage, Ma
     cout << "All data saved.\n";
 }
 
+// Change Cargo file path
 void TUI::changeCargoFile() {
     string newFile = getInput("Enter new Cargo filename: ");
     if (!newFile.empty()) cargoFilename = newFile;
     cout << "Cargo filename updated.\n";
 }
 
+// Change Freight file path
 void TUI::changeFreightFile() {
     string newFile = getInput("Enter new Freight filename: ");
     if (!newFile.empty()) freightFilename = newFile;
     cout << "Freight filename updated.\n";
 }
 
+// Change Matches file path
 void TUI::changeMatchesFile() {
     string newFile = getInput("Enter new Matches filename: ");
     if (!newFile.empty()) matchesFilename = newFile;
     cout << "Matches filename updated.\n";
 }
 
+// Change Enhanced Schedule file path
 void TUI::changeEnhancedScheduleFile() {
     string newFile = getInput("Enter new Enhanced Schedule filename: ");
     if (!newFile.empty()) enhancedScheduleFilename = newFile;
     cout << "Enhanced Schedule filename updated.\n";
 }
 
+// Reset file paths to default values
 void TUI::resetToDefaultFiles() {
     cargoFilename = DEFAULT_CARGO_FILE;
     freightFilename = DEFAULT_FREIGHT_FILE;

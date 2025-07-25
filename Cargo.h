@@ -2,6 +2,8 @@
 #include <string>
 #include "Time.h"
 
+//Done by Brendan Tjung Yew Wang 2401765
+
 using namespace std;
 
 class Cargo {
@@ -9,7 +11,7 @@ private:
     string id;
     Time time;
     string dest;
-    int size; // NEW: Add size member
+    int size; // NEW: Add size variable for  Cargo
 
 public:
     Cargo();

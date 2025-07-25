@@ -1,4 +1,4 @@
-F001,1300,New York,MegaCarrier
+F001,2000,New York,MegaCarrier
 F002,1500,Boston,CargoCruiser
 F003,730,London,MiniMover
 F004,1710,Paris,CargoCruiser

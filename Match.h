@@ -7,6 +7,8 @@
 #include "FStorage.h"
 #include "CStorage.h"
 
+//Done by Ryan Ang Rui Heng 2400522
+
 using namespace std;
 
 /*
@@ -15,6 +17,7 @@ using namespace std;
 */
 class Match {
 private:
+	// Pairing of Freight and Cargo
     struct MatchPair {
         Freight freight;
         Cargo cargo;

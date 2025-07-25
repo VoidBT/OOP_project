@@ -4,24 +4,31 @@
 #include <iostream>
 #include <iomanip>
 
+//Done by Ryan Ang Rui Heng 2400522
+
 using namespace std;
 
+// Adds a FreightExtended object to the schedule list
 void ScheduleList::addFreight(shared_ptr<FreightExtended> freight) {
     freights.push_back(freight);
 }
 
+// Adds a Cargo object to the cargo groups in the schedule list
 void ScheduleList::addCargo(const Cargo& cargo) {
     cargoGroups.push_back(cargo);
 }
 
+// Returns a constant reference to the list of FreightExtended objects
 const vector<shared_ptr<FreightExtended>> ScheduleList::getFreights() const {
     return freights;
 }
 
+// Returns a constant reference to the list of Cargo objects
 const vector<Cargo>& ScheduleList::getCargos() const {
     return cargoGroups;
 }
 
+// Resets the schedule list by clearing all freights, cargo groups, and unassigned cargos
 void ScheduleList::reset() {
     for (auto& freight : freights) {
         freight->clearAssignedCargos();
@@ -31,6 +38,7 @@ void ScheduleList::reset() {
     unassignedCargos.clear();
 }
 
+// Resets the freight assignments by clearing assigned cargos for each freight
 void ScheduleList::resetFreightAssignments() {
     for (auto& freight : freights) {
         freight->clearAssignedCargos();
@@ -38,6 +46,7 @@ void ScheduleList::resetFreightAssignments() {
     unassignedCargos.clear();
 }
 
+// Checks if a cargo can be assigned to a freight based on destination, time, and capacity
 bool ScheduleList::canAssignToFreight(const FreightExtended& freight, const Cargo& cargo) const {
     return freight.canAcceptAnotherCargo() &&
         freight.getDest() == cargo.getDest() &&
@@ -45,20 +54,27 @@ bool ScheduleList::canAssignToFreight(const FreightExtended& freight, const Carg
         cargo.getTime().isWithinLimit(freight.getTime());
 }
 
-bool ScheduleList::assignCargoToBestFreight(const Cargo& cargo) {
+// Assigns a cargo to the best available freight based on arrival time
+bool ScheduleList::assignCargoToBestFreight(Cargo& cargo) {
     sort(freights.begin(), freights.end(),
         [](const auto& a, const auto& b) { return a->getTime().getRawTime() < b->getTime().getRawTime(); });
 
+    int cargoleft = 0;
+
     for (auto& freight : freights) {
         if (canAssignToFreight(*freight, cargo)) {
-            freight->assignCargo(cargo.getID(), cargo.getSize());
-            return true;
+            cargoleft = freight->assignCargo(cargo.getID(), cargo.getSize());
+            cargo.setSize(cargoleft);
+            if (cargoleft == 0) {
+				return true;
+            }
         }
     }
     return false;
 }
 
-bool ScheduleList::assignGroupToFreights(const Cargo& group) {
+// Assigns a cargo group to the best available freight, returning true if all cargos are assigned
+bool ScheduleList::assignGroupToFreights(Cargo& group) {
     bool allAssigned = true;
 
     if (!assignCargoToBestFreight(group)) {
@@ -69,6 +85,7 @@ bool ScheduleList::assignGroupToFreights(const Cargo& group) {
     return allAssigned;
 }
 
+// Displays the scheduling plan sorted by freight arrival time
 void ScheduleList::displayByArrivalTime() const {
     vector<shared_ptr<FreightExtended>> sortedFreights = freights;
     sort(sortedFreights.begin(), sortedFreights.end(),
@@ -95,6 +112,7 @@ void ScheduleList::displayByArrivalTime() const {
     }
 }
 
+// Displays the scheduling plan sorted by freight capacity (most used first)
 void ScheduleList::displayByFreightCapacity() const {
     vector<shared_ptr<FreightExtended>> sortedFreights = freights;
     sort(sortedFreights.begin(), sortedFreights.end(),
@@ -126,6 +144,7 @@ void ScheduleList::displayByFreightCapacity() const {
     }
 }
 
+// Displays underutilized freights that are not at full capacity by size
 void ScheduleList::displayUnderutilizedFreights() const {
     cout << "\nUnderutilized Freights (Not at Full Capacity by Size):\n";
     cout << "=============================================\n";
@@ -147,6 +166,7 @@ void ScheduleList::displayUnderutilizedFreights() const {
     }
 }
 
+// Displays unassigned cargos that could not be scheduled
 void ScheduleList::displayUnassignedCargos() const {
     cout << "\n--- Unassigned Cargos ---\n";
     if (unassignedCargos.empty()) {
@@ -159,6 +179,7 @@ void ScheduleList::displayUnassignedCargos() const {
     }
 }
 
+// Schedules freights by their capacity, assigning cargo groups to the most suitable freights
 void ScheduleList::scheduleByFreightCapacity() {
     resetFreightAssignments();
 
@@ -167,7 +188,7 @@ void ScheduleList::scheduleByFreightCapacity() {
             return a->getMaxCapacity() > b->getMaxCapacity();
         });
 
-    for (const auto& group : getCargos()) {
+    for (auto& group : cargoGroups) {
         assignGroupToFreights(group);
     }
 
@@ -175,16 +196,16 @@ void ScheduleList::scheduleByFreightCapacity() {
         << unassignedCargos.size() << " cargoGroups unassigned.\n";
 }
 
+// Schedules freights by their arrival time, assigning cargo groups to the best available freights
 void ScheduleList::scheduleByArrivalTime() {
     resetFreightAssignments();
 
-    vector<Cargo> sortedGroups = cargoGroups;
-    sort(sortedGroups.begin(), sortedGroups.end(),
+    sort(cargoGroups.begin(), cargoGroups.end(),
         [](const Cargo& a, const Cargo& b) {
             return a.getTime().getRawTime() < b.getTime().getRawTime();
         });
 
-    for (const auto& cargo : sortedGroups) {
+    for (auto& cargo : cargoGroups) {
         if (!assignCargoToBestFreight(cargo)) {
             unassignedCargos.push_back(cargo.getID());
         }
@@ -192,6 +213,7 @@ void ScheduleList::scheduleByArrivalTime() {
     cout << "Scheduling by arrival time completed. " << unassignedCargos.size() << " cargos unassigned.\n";
 }
 
+// Saves the enhanced schedule to a file with detailed information about each freight and its assigned cargos
 void ScheduleList::saveEnhancedSchedule(const string& filename) const {
     ofstream file(filename);
     if (!file) {
@@ -231,6 +253,7 @@ void ScheduleList::saveEnhancedSchedule(const string& filename) const {
     cout << "Enhanced schedule saved to " << filename << endl;
 }
 
+// Prints all data in the schedule list, including freights, cargo groups, and unassigned cargos
 void ScheduleList::printAll() const {
     cout << "\n(All Data):\n";
     cout << "===========================\n";
@@ -280,7 +303,7 @@ void ScheduleList::printAll() const {
         for (const auto& group : sortedGroups) {
             cout << "Group ID: " << group.getID()
                 << ", Destination: " << group.getDest()
-                << ", Size: " << group.getSize() << "/" << group.getSize()
+                << ", Size: " << group.getSize()
                 << ", Time Window: " << group.getTime().getRawTime() << "\n";
             cout << "\n";
         }

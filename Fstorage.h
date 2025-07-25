@@ -4,10 +4,13 @@
 #include <memory>
 #include "FreightTypes.h"
 
+//Done by Ryan Ang Rui Heng 2400522
+
 using namespace std;
 
 class FStorage {
 private:
+	// Storage for FreightExtended objects
     vector<shared_ptr<FreightExtended>> freights;
 
 public:

@@ -3,12 +3,16 @@
 #include <iostream>
 #include <iomanip>
 
+//Done by Brendan Tjung Yew Wang 2401765
+
 using namespace std;
 
+// CStorage class implementation
 void CStorage::addCargo(const Cargo& cargo) {
     cargos.push_back(cargo);
 }
 
+// Edit cargo by ID, updating time and destination
 void CStorage::editCargo(const string& id, int newTime, const string& newDest) {
     Cargo* cargo = findCargo(id);
     if (cargo) {
@@ -20,6 +24,7 @@ void CStorage::editCargo(const string& id, int newTime, const string& newDest) {
     }
 }
 
+// Delete cargo by ID
 void CStorage::deleteCargo(const string& id) {
     auto it = remove_if(cargos.begin(), cargos.end(),
         [&id](const Cargo& c) { return c.getID() == id; });
@@ -31,10 +36,12 @@ void CStorage::deleteCargo(const string& id) {
     }
 }
 
+// Get all cargos
 const vector<Cargo>& CStorage::getAllCargos() const {
     return cargos;
 }
 
+// Print all cargos in storage
 void CStorage::printAll() const {
     cout << "\n--- All Cargos ---\n";
     if (cargos.empty()) {
@@ -50,6 +57,7 @@ void CStorage::printAll() const {
 	cout << setfill(' '); // Reset fill character after setw
 }
 
+// Print all cargo groups
 void CStorage::printAllGroups() const {
     cout << "\n--- All Cargo Groups ---\n";
     if (groups.empty()) {
@@ -72,6 +80,7 @@ void CStorage::printAllGroups() const {
     cout << setfill(' '); // Reset fill character after setw
 }
 
+// Find cargo by ID
 Cargo* CStorage::findCargo(const string& id) {
     for (auto& cargo : cargos) {
         if (cargo.getID() == id) {
@@ -81,6 +90,7 @@ Cargo* CStorage::findCargo(const string& id) {
     return nullptr;
 }
 
+// Create cargo groups based on destination and time window
 void CStorage::CreateGroups() {
 
 	vector<Cargo> sortedCargos = cargos;
@@ -138,10 +148,12 @@ void CStorage::CreateGroups() {
     }
 }
 
+// Get all cargo groups
 vector<CargoGroup> CStorage::getCargoGroups() const {
     return groups;
 }
 
+// Clear all cargos and groups
 void CStorage::clear() {
     for (auto& cargo : groups) {
         cargo.clear();

@@ -1,5 +1,7 @@
 #include "FilePrinter.h"
 
+//Done by Ryan Ang Rui Heng 2400522
+
 vector<string> FilePrinter::splitLine(const string& line, char delimiter) {
     vector<string> tokens;
     string token;
@@ -13,6 +15,7 @@ vector<string> FilePrinter::splitLine(const string& line, char delimiter) {
     return tokens;
 }
 
+// Function definitions for FilePrinter class
 void FilePrinter::printFile(const string& filename) {
     ifstream file(filename);
     if (!file.is_open()) {
@@ -27,6 +30,7 @@ void FilePrinter::printFile(const string& filename) {
     file.close();
 }
 
+//Function to print the contents of a file with formatted columns
 void FilePrinter::printFileFormatted(const string& filename,
     const string& delimiter,
     int columnWidth) {
@@ -47,6 +51,7 @@ void FilePrinter::printFileFormatted(const string& filename,
     file.close();
 }
 
+// Function to print the contents of a file with headers
 void FilePrinter::printFileWithHeaders(const string& filename,
     const vector<string>& headers,
     const string& delimiter,

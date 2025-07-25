@@ -2,12 +2,16 @@
 #include <algorithm>
 #include <iostream>
 
+//Done by Ryan Ang Rui Heng 2400522
+
 using namespace std;
 
+// FStorage class implementation
 void FStorage::addFreight(shared_ptr<FreightExtended> freight) {
     freights.push_back(freight);
 }
 
+// Edit freight details by ID
 void FStorage::editFreight(const string& id, int newTime, const string& newDest) {
     shared_ptr<FreightExtended> freight = findFreight(id);
     if (freight) {
@@ -19,6 +23,7 @@ void FStorage::editFreight(const string& id, int newTime, const string& newDest)
     }
 }
 
+// Delete freight by ID
 void FStorage::deleteFreight(const string& id) {
     auto it = remove_if(freights.begin(), freights.end(),
         [&id](const shared_ptr<FreightExtended>& f) { return f->getID() == id; });
@@ -30,10 +35,12 @@ void FStorage::deleteFreight(const string& id) {
     }
 }
 
+// Get all freights
 const vector<shared_ptr<FreightExtended>>& FStorage::getAllFreights() const {
     return freights;
 }
 
+// Print all freights in storage
 void FStorage::printAll() const {
     cout << "\n--- All Freights ---\n";
     if (freights.empty()) {
@@ -49,6 +56,7 @@ void FStorage::printAll() const {
     }
 }
 
+// Find freight by ID
 shared_ptr<FreightExtended> FStorage::findFreight(const string& id) {
     for (auto& freight : freights) {
         if (freight->getID() == id) {
@@ -58,6 +66,7 @@ shared_ptr<FreightExtended> FStorage::findFreight(const string& id) {
     return nullptr;
 }
 
+// Clear all freights in storage
 void FStorage::clear() {
     for(auto& ptr : freights) {
 		FreightExtended* freightPtr = ptr.get();

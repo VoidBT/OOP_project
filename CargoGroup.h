@@ -2,7 +2,9 @@
 #include <string>
 #include <vector>
 #include "Time.h"
-#include "Cargo.h" // Only include Cargo.h
+#include "Cargo.h"
+
+//Done by Brendan Tjung Yew Wang 2401765
 
 class CargoGroup {
 private:
@@ -36,5 +38,6 @@ public:
     void setDestination(const std::string& newDest);
     void setTimeWindow(int newWindow);
 
+	//For clearing memory
     void clear();
 };

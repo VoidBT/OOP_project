@@ -4,10 +4,13 @@
 #include "Cargo.h"
 #include "CargoGroup.h"
 
+//Done by Brendan Tjung Yew Wang 2401765
+
 using namespace std;
 
 class CStorage {
 private:
+	// Store cargos and groups
     vector<Cargo> cargos;
     vector<CargoGroup> groups;
 

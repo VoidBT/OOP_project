@@ -1,12 +1,14 @@
 #include "Cargo.h"
 
+//Done by Brendan Tjung Yew Wang 2401765
+
 Cargo::Cargo() : id(), time(), dest(), size() {
 
 }
 // NEW: Update constructor implementation
 Cargo::Cargo(const string& id, int time, const string& dest, int size)
     : id(id), time(time), dest(dest), size(size) {
-} // Initialize size
+}
 
 string Cargo::getID() const { return id; }
 Time Cargo::getTime() const { return time; }

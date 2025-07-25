@@ -1,11 +1,15 @@
 #include "CargoGroup.h"
 #include <algorithm>
+
+//Done by Brendan Tjung Yew Wang 2401765
 using namespace std;
 
+//Constructor for CargoGroup
 CargoGroup::CargoGroup(int id, const string& dest, int timeWindow)
     : groupId(id), destination(dest), timeWindow(timeWindow), GrpSize(0) {
 }
 
+//Adding a cargo into a group
 bool CargoGroup::addCargo(const Cargo& cargo) {
     // Ensure cargo destination matches group destination
     if (cargos.size() >= maxSize || cargo.getDest() != destination) {
@@ -18,6 +22,7 @@ bool CargoGroup::addCargo(const Cargo& cargo) {
     return true;
 }
 
+//For removing a cargo from the group
 bool CargoGroup::removeCargo(const string& cargoId) {
     auto it = remove_if(cargos.begin(), cargos.end(),
         [&cargoId](const Cargo& c) { return c.getID() == cargoId; });
@@ -29,11 +34,13 @@ bool CargoGroup::removeCargo(const string& cargoId) {
     return false;
 }
 
+//Check if a cargo exists in the group
 bool CargoGroup::containsCargo(const string& cargoId) const {
     return any_of(cargos.begin(), cargos.end(),
         [&cargoId](const Cargo& c) { return c.getID() == cargoId; });
 }
 
+//Check if the group is full or empty
 bool CargoGroup::isFull() const {
     return cargos.size() >= maxSize;
 }
@@ -59,6 +66,7 @@ int CargoGroup::getGrpSize() const { return GrpSize; }
 void CargoGroup::setDestination(const string& newDest) { destination = newDest; }
 void CargoGroup::setTimeWindow(int newWindow) { timeWindow = newWindow; }
 
+//For clearing memory
 void CargoGroup::clear() {
     cargos.clear();
     GrpSize = 0;

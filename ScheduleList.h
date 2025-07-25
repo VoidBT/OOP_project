@@ -3,10 +3,13 @@
 #include <memory>
 #include "FreightTypes.h"
 
+//Done by Ryan Ang Rui Heng 2400522
+
 using namespace std;
 
 class ScheduleList {
 private:
+	// List of freights and cargo groups
     vector<shared_ptr<FreightExtended>> freights;
     vector<Cargo> cargoGroups;
     vector<string> unassignedCargos;
@@ -34,6 +37,6 @@ public:
 private:
     void resetFreightAssignments();
     bool canAssignToFreight(const FreightExtended& freight, const Cargo& cargo) const;
-    bool assignCargoToBestFreight(const Cargo& cargo);
-    bool assignGroupToFreights(const Cargo& group);
+    bool assignCargoToBestFreight(Cargo& cargo);
+    bool assignGroupToFreights(Cargo& group);
 };

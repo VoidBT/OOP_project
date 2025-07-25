@@ -1,12 +1,16 @@
 #include "Match.h"
 #include <iostream>
 
+//Done by Ryan Ang Rui Heng 2400522
+
 using namespace std;
 
+// Match class implementation
 bool Match::isEmpty() const {
     return matches.empty();
 }
 
+// Match freights and cargos based on simple criteria
 void Match::matchFreightAndCargo(FStorage& freightStorage, CStorage& cargoStorage) {
     if (freightStorage.getAllFreights().empty() || cargoStorage.getAllCargos().empty()) {
         cout << "Cannot perform basic matching: No freights or cargos available in storage.\n";
@@ -32,6 +36,7 @@ void Match::matchFreightAndCargo(FStorage& freightStorage, CStorage& cargoStorag
     }
 }
 
+// Add a match to the matches vector
 void Match::addMatch(const Freight& freight, const Cargo& cargo) {
     matches.emplace_back(freight, cargo);
 }
@@ -50,6 +55,7 @@ vector<string> Match::getMatches() const {
     return matchdata;
 }
 
+// Print all matches
 void Match::printAll() const {
     cout << "\n--- Basic Matches ---\n";
     if (isEmpty()) {

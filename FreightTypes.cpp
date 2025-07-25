@@ -2,6 +2,8 @@
 #include <algorithm>
 #include <stdexcept>
 
+//Done by Ryan Ang Rui Heng 2400522
+
 using namespace std;
 
 FreightExtended::FreightExtended(const string& id, int t, const string& d, FreightType type)
@@ -23,19 +25,24 @@ bool FreightExtended::isFull() const {
     return currentLoadSize >= maxCapacity;
 }
 
-bool FreightExtended::canAcceptMore(int cargoSize) const {
-    return currentLoadSize < maxCapacity;
+int FreightExtended::canAcceptMore(int cargoSize) const {
+    if (currentLoadSize + cargoSize < maxCapacity) {
+		return cargoSize;
+    }
+	return maxCapacity - currentLoadSize;
 }
 
 bool FreightExtended::canAcceptAnotherCargo() const {
     return currentLoadSize < maxCapacity;
 }
 
-bool FreightExtended::assignCargo(const string& cargoId, int cargoSize) {
-    if (!canAcceptMore(cargoSize)) return false;
-    assignedCargos.push_back(cargoId);
-    currentLoadSize += cargoSize;
-    return true;
+int FreightExtended::assignCargo(const string& cargoId, int cargoSize) {
+	int acceptedSize = canAcceptMore(cargoSize);
+    
+    assignedCargos.push_back(cargoId+", Qty: "+to_string(acceptedSize));
+    currentLoadSize += acceptedSize;
+
+    return cargoSize - acceptedSize;
 }
 
 bool FreightExtended::removeCargo(const string& cargoId) {

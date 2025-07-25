@@ -6,6 +6,8 @@
 #include "Freight.h"
 #include "Cargo.h"
 
+//Done by Ryan Ang Rui Heng 2400522
+
 using namespace std;
 
 class FreightExtended : public Freight {
@@ -21,9 +23,9 @@ public:
     int getCurrentLoadSize() const;
     bool isFull() const;
 
-    bool canAcceptMore(int cargoSize) const;
+    int canAcceptMore(int cargoSize) const;
     bool canAcceptAnotherCargo() const;
-    bool assignCargo(const string& cargoId, int cargoSize);
+    int assignCargo(const string& cargoId, int cargoSize);
     bool removeCargo(const string& cargoId);
     void clearAssignedCargos();
     const vector<string>& getAssignedCargos() const;
